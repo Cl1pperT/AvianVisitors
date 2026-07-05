@@ -1,0 +1,26 @@
+# Weather Frame: procedural daily artwork for the AvianVisitors e-ink panel.
+# Copy to ~/.weatherframe/config.toml and edit the location before use.
+
+provider = "open_meteo"
+location = "Denver, CO"       # city or postal code
+country_code = "US"           # optional ISO-3166 two-letter filter
+# location_label = "Home"     # optional caption label; defaults to the resolved place
+
+units = "imperial"            # "imperial" or "metric"; artwork uses metric internally
+style = "woodblock"           # "woodblock" or "ink_wash"
+caption = false               # location/date/condition/high-low footer
+scene_source = "auto"         # use generated scene when available, otherwise procedural
+environment = "auto"          # rotate generated Utah scenes, or set a catalog slug
+
+output = "~/.weatherframe/weather.png"
+state = "~/.weatherframe/state.json"
+timeout = 30
+
+# The manual systemd timer runs at 06:05. These defaults permit that update.
+quiet_start = 22
+quiet_end = 6
+heal_hours = 24
+
+rotate = 90                   # use 270 if the frame hangs the other way
+saturation = 0.6
+# panel = "el133uf1"          # force the 13.3-inch driver if auto-detect fails

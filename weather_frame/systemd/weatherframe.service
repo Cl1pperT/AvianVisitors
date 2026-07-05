@@ -1,0 +1,16 @@
+[Unit]
+Description=Procedural daily weather artwork for the AvianVisitors e-ink frame
+Documentation=https://github.com/Twarner491/AvianVisitors
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+# install_timer.sh replaces these tokens with the current clone and account.
+Type=oneshot
+User=@USER@
+WorkingDirectory=@ROOT@
+ExecStart=@ROOT@/frame/.venv/bin/python -m weather_frame --config @HOME@/.weatherframe/config.toml --display
+Environment=PYTHONUNBUFFERED=1
+Nice=10
+TimeoutStartSec=300
+

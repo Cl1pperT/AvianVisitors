@@ -1,0 +1,10 @@
+[Unit]
+Description=Update the weather art frame each morning
+
+[Timer]
+OnCalendar=*-*-* 06:05:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target
+

@@ -1,0 +1,32 @@
+{
+  "schema": 1,
+  "size": [
+    1600,
+    420
+  ],
+  "conditions": [
+    "sun",
+    "snow",
+    "clouds",
+    "melting_snow"
+  ],
+  "mountains": [
+    "alpine",
+    "massif",
+    "sawtooth"
+  ],
+  "files": [
+    "mountains/sun/alpine.png",
+    "mountains/sun/massif.png",
+    "mountains/sun/sawtooth.png",
+    "mountains/snow/alpine.png",
+    "mountains/snow/massif.png",
+    "mountains/snow/sawtooth.png",
+    "mountains/clouds/alpine.png",
+    "mountains/clouds/massif.png",
+    "mountains/clouds/sawtooth.png",
+    "mountains/melting_snow/alpine.png",
+    "mountains/melting_snow/massif.png",
+    "mountains/melting_snow/sawtooth.png"
+  ]
+}

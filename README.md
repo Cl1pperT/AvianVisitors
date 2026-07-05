@@ -94,15 +94,18 @@ avian/                  # everything we add to BirdNET-Pi
 ├── scripts/            # generate -> cutout -> masks pipeline + prompt
 └── forwarding/         # optional HA / MQTT / Cloudflare configs
 frame/                  # optional e-ink wall display
+weather_frame/          # optional procedural weather-art display
 ```
 
-Everything outside `avian/` and `frame/` is upstream BirdNET-Pi.
+Everything outside `avian/`, `frame/`, and `weather_frame/` is upstream BirdNET-Pi.
 
 ---
 
 ## Wall frame
 
 An optional e-ink frame mirrors the last 24h of birds onto a panel by your window. Build it from [`frame/`](frame/README.md). It can run off your own BirdNET mic, or standalone from BirdWeather data for any ZIP code with no mic at all.
+
+For a separate, opt-in morning forecast scene, see [`weather_frame/`](weather_frame/README.md). Its procedural Pillow renderer and state are isolated from the bird display.
 
 ---
 

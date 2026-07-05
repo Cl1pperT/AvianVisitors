@@ -1,0 +1,5 @@
+# Preview/render dependencies. A physical frame can reuse frame/.venv, whose
+# Inky requirements are installed by frame/install.sh.
+Pillow>=10,<13
+tomli; python_version < "3.11"
+
