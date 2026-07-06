@@ -23,8 +23,9 @@ component library under `assets/mountains/`, organized into aligned `sun`,
 ## How it is isolated
 
 - Weather configuration, images, and refresh state live in `~/.weatherframe/`.
-- `frame/display.py` is imported only for its panel dimensions, Spectra-6
-  preview, quiet-hours/state helpers, and Inky update function.
+- `frame/display.py` is imported only for its panel dimensions,
+  quiet-hours/state helpers, and Inky update function. Weather preview
+  quantization is isolated in `weather_frame/eink.py`.
 - The bird collage renderer, bird signatures, installer, and systemd units are
   not modified.
 - Preview and ordinary render commands cannot update the panel.
@@ -43,8 +44,8 @@ mkdir -p ~/.weatherframe
 cp weather_frame/config.example.toml ~/.weatherframe/config.toml
 ```
 
-Edit `location` in `~/.weatherframe/config.toml`, then generate an approximate
-six-ink preview:
+Edit `location` in `~/.weatherframe/config.toml`, then generate a six-ink
+preview:
 
 ```bash
 weather_frame/.venv/bin/python -m weather_frame \
@@ -63,9 +64,18 @@ weather_frame/.venv/bin/python -m weather_frame.preview_app
 
 Enter a city or postal code and select **Generate E-Ink Preview**. The window
 fetches today's forecast, chooses a generated scene or procedural fallback, and
-shows the result after conversion to the six-color Spectra palette. **Save
-PNG…** writes the exact 1600×1200 simulated panel image. This application never
-updates the physical display or writes refresh state.
+shows the result after conversion with the same saturation-dependent palette
+math and Floyd–Steinberg dithering used by Pimoroni's 13.3-inch driver. The
+on-screen image is area-averaged to represent normal viewing distance and avoid
+scaling artifacts. **Save PNG…** writes the native 1600×1200 six-color dither.
+Monitor colors remain an approximation because the real panel uses reflective
+pigments and ambient light. This application never updates the physical display
+or writes refresh state.
+
+The **Blue bias** control selectively pulls existing cyan, blue, and indigo
+source pixels toward the driver's blue matching point before dithering. It
+defaults to `0.50`; adjust in `0.05` increments. A value of `0` disables the
+adjustment.
 
 If `~/.weatherframe/config.toml` exists, its location and artwork settings
 prefill the controls. A different configuration or initial location can be
@@ -112,6 +122,7 @@ heal_hours = 24
 
 rotate = 90
 saturation = 0.6
+blue_bias = 0.5          # selectively increases blue-ink pixel assignment
 # panel = "el133uf1"
 ```
 
@@ -242,10 +253,11 @@ frame/.venv/bin/python -m weather_frame \
   --display
 ```
 
-The image is hashed after Spectra-6 preview quantization. An unchanged image is
-not pushed again unless `heal_hours` has elapsed. State is saved only after a
-successful hardware update. Fetch, render, or panel failures leave the previous
-panel image and refresh state intact.
+The image is hashed after driver-matched Spectra-6 quantization using the
+configured `saturation`. An unchanged image is not pushed again unless
+`heal_hours` has elapsed. State is saved only after a successful hardware
+update. Fetch, render, or panel failures leave the previous panel image and
+refresh state intact.
 
 `--force` bypasses quiet hours and signature checks:
 

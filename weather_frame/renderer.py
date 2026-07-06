@@ -60,6 +60,12 @@ CONDITION_LABELS = {
     Condition.THUNDER: "Thunderstorms",
 }
 
+CAPTION_HEIGHT = 73
+CAPTION_FONT_SIZE = 28
+CAPTION_MIN_FONT_SIZE = 22
+CAPTION_MARGIN = 28
+CAPTION_GAP = 36
+
 ASSET_ROOT = Path(__file__).parent / "assets" / "mountains"
 MOUNTAIN_CONDITIONS = ("sun", "snow", "clouds", "melting_snow")
 CANONICAL_COLORS = {
@@ -377,14 +383,46 @@ def _caption(draw: ImageDraw.ImageDraw, forecast: DailyForecast, style: Style, w
         high, low = round(forecast.high_c), round(forecast.low_c)
         temperatures = f"{high}° / {low}°C"
     label = CONDITION_LABELS[forecast.condition]
-    top = height - 73
+    left = f"{forecast.location_name}  ·  {forecast.date:%a %b %-d}"
+    right = f"{label}  ·  {temperatures}"
+
+    font = _font(CAPTION_FONT_SIZE)
+    for size in range(CAPTION_FONT_SIZE, CAPTION_MIN_FONT_SIZE - 1, -1):
+        candidate = _font(size)
+        left_box = draw.textbbox((0, 0), left, font=candidate)
+        right_box = draw.textbbox((0, 0), right, font=candidate)
+        total_width = (
+            left_box[2] - left_box[0]
+            + right_box[2] - right_box[0]
+            + CAPTION_GAP
+            + 2 * CAPTION_MARGIN
+        )
+        font = candidate
+        if total_width <= width:
+            break
+
+    left_box = draw.textbbox((0, 0), left, font=font)
+    right_box = draw.textbbox((0, 0), right, font=font)
+    top = height - CAPTION_HEIGHT
     draw.rectangle((0, top, width, height), fill=_blend(style.paper, style.yellow, 0.08))
     draw.line((24, top, width - 24, top), fill=_blend(style.ink, style.paper, 0.45), width=1)
-    draw.text((28, top + 15), f"{forecast.location_name}  ·  {forecast.date:%a %b %-d}",
-              fill=style.ink, font=_font(19))
-    right = f"{label}  ·  {temperatures}"
-    box = draw.textbbox((0, 0), right, font=_font(19))
-    draw.text((width - 28 - (box[2] - box[0]), top + 15), right, fill=style.ink, font=_font(19))
+
+    left_height = left_box[3] - left_box[1]
+    right_height = right_box[3] - right_box[1]
+    left_y = top + (CAPTION_HEIGHT - left_height) // 2 - left_box[1]
+    right_y = top + (CAPTION_HEIGHT - right_height) // 2 - right_box[1]
+    draw.text(
+        (CAPTION_MARGIN, left_y),
+        left,
+        fill=style.ink,
+        font=font,
+    )
+    draw.text(
+        (width - CAPTION_MARGIN - (right_box[2] - right_box[0]), right_y),
+        right,
+        fill=style.ink,
+        font=font,
+    )
 
 
 def render_forecast(

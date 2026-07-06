@@ -23,4 +23,5 @@ heal_hours = 24
 
 rotate = 90                   # use 270 if the frame hangs the other way
 saturation = 0.6
+blue_bias = 0.5               # selectively increases blue-ink pixel assignment
 # panel = "el133uf1"          # force the 13.3-inch driver if auto-detect fails

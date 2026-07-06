@@ -13,6 +13,7 @@ from PIL import Image
 
 from frame import display as panel
 
+from .eink import apply_blue_bias, quantize_spectra6
 from .renderer import STYLES, render_forecast
 from .scene_catalog import ENVIRONMENTS
 from .weather import DailyForecast, ForecastProvider, OpenMeteoProvider
@@ -41,6 +42,7 @@ DEFAULTS: dict[str, Any] = {
     "heal_hours": 24,
     "rotate": 90,
     "saturation": 0.6,
+    "blue_bias": 0.5,
     "panel": "",
 }
 
@@ -72,6 +74,8 @@ def validate_config(cfg: Mapping[str, Any]) -> None:
         raise ValueError("rotate must be 90 or 270")
     if not 0 <= float(cfg.get("saturation", -1)) <= 1:
         raise ValueError("saturation must be between 0 and 1")
+    if not 0 <= float(cfg.get("blue_bias", -1)) <= 1:
+        raise ValueError("blue_bias must be between 0 and 1")
     for key in ("quiet_start", "quiet_end"):
         if not 0 <= int(cfg.get(key, -1)) <= 23:
             raise ValueError(f"{key} must be an hour from 0 through 23")
@@ -158,9 +162,14 @@ def run(
         scene_source=str(cfg["scene_source"]),
         environment=str(cfg["environment"]),
     )
+    image = apply_blue_bias(
+        image,
+        amount=float(cfg["blue_bias"]),
+        saturation=float(cfg["saturation"]),
+    )
 
     if preview:
-        output = panel_module.quantize_spectra6(image)
+        output = quantize_spectra6(image, float(cfg["saturation"]))
         path = _save_png(output, preview)
         print(f"wrote preview {path}")
         return "preview"
@@ -172,7 +181,7 @@ def run(
 
     local_now = _local_now(forecast, now)
     state = panel_module.load_state(str(cfg["state"]))
-    quantized = panel_module.quantize_spectra6(image)
+    quantized = quantize_spectra6(image, float(cfg["saturation"]))
     signature = image_signature(quantized)
     last_refresh = float(state.get("last_refresh") or 0)
     heal_due = local_now.timestamp() - last_refresh >= float(cfg["heal_hours"]) * 3600

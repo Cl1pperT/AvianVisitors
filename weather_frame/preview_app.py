@@ -15,9 +15,8 @@ from typing import Any, Mapping
 
 from PIL import Image
 
-from frame import display as panel
-
 from .app import DEFAULTS, fetch_forecast, load_config, validate_config
+from .eink import apply_blue_bias, quantize_spectra6
 from .renderer import STYLES, render_forecast
 from .scene_catalog import ENVIRONMENTS, generated_scene_path
 from .weather import DailyForecast, ForecastProvider
@@ -32,6 +31,8 @@ class PreviewResult:
     environment: str
     condition: str
     source_path: Path | None
+    saturation: float
+    blue_bias: float
 
 
 def generate_eink_preview(
@@ -49,7 +50,10 @@ def generate_eink_preview(
         scene_source=str(cfg["scene_source"]),
         environment=str(cfg["environment"]),
     )
-    preview = panel.quantize_spectra6(artwork).convert("RGB")
+    saturation = float(cfg["saturation"])
+    blue_bias = float(cfg["blue_bias"])
+    artwork = apply_blue_bias(artwork, blue_bias, saturation)
+    preview = quantize_spectra6(artwork, saturation)
 
     environment, condition, scene_path = generated_scene_path(
         forecast, str(cfg["environment"])
@@ -61,6 +65,8 @@ def generate_eink_preview(
         environment=environment,
         condition=condition,
         source_path=scene_path if uses_scene else None,
+        saturation=saturation,
+        blue_bias=blue_bias,
     )
 
 
@@ -107,6 +113,12 @@ def _launch_gui(initial_cfg: Mapping[str, Any]) -> None:
             )
             self.style = tk.StringVar(value=str(initial_cfg.get("style") or "woodblock"))
             self.caption = tk.BooleanVar(value=bool(initial_cfg.get("caption")))
+            self.saturation = tk.DoubleVar(
+                value=float(initial_cfg.get("saturation", 0.6))
+            )
+            self.blue_bias = tk.DoubleVar(
+                value=float(initial_cfg.get("blue_bias", 0.0))
+            )
             self.status = tk.StringVar(
                 value="Enter a city or postal code, then generate a preview."
             )
@@ -170,6 +182,28 @@ def _launch_gui(initial_cfg: Mapping[str, Any]) -> None:
             ttk.Checkbutton(
                 options, text="Forecast caption", variable=self.caption
             ).grid(row=0, column=6)
+            ttk.Label(options, text="Saturation").grid(
+                row=0, column=7, padx=(14, 6)
+            )
+            ttk.Spinbox(
+                options,
+                textvariable=self.saturation,
+                from_=0.0,
+                to=1.0,
+                increment=0.05,
+                width=5,
+            ).grid(row=0, column=8)
+            ttk.Label(options, text="Blue bias").grid(
+                row=0, column=9, padx=(14, 6)
+            )
+            ttk.Spinbox(
+                options,
+                textvariable=self.blue_bias,
+                from_=0.0,
+                to=1.0,
+                increment=0.05,
+                width=5,
+            ).grid(row=0, column=10)
 
             actions = ttk.Frame(outer)
             actions.grid(row=2, column=0, columnspan=4, sticky="ew", pady=(0, 10))
@@ -220,6 +254,8 @@ def _launch_gui(initial_cfg: Mapping[str, Any]) -> None:
                     "scene_source": self.scene_source.get(),
                     "style": self.style.get(),
                     "caption": bool(self.caption.get()),
+                    "saturation": float(self.saturation.get()),
+                    "blue_bias": float(self.blue_bias.get()),
                 }
             )
             return cfg
@@ -232,7 +268,16 @@ def _launch_gui(initial_cfg: Mapping[str, Any]) -> None:
             self.save_button.configure(state="disabled")
             self.status.set("Fetching forecast and rendering…")
             self.details.set("")
-            cfg = self._request_config()
+            try:
+                cfg = self._request_config()
+            except ValueError:
+                self.generate_button.configure(state="normal")
+                self.status.set("Preview settings are invalid.")
+                messagebox.showerror(
+                    "Invalid preview settings",
+                    "Saturation and blue bias must be numbers from 0 through 1.",
+                )
+                return
 
             def worker() -> None:
                 try:
@@ -285,7 +330,8 @@ def _launch_gui(initial_cfg: Mapping[str, Any]) -> None:
             self.details.set(
                 f"{forecast.location_name} · {condition} · High/low {temperatures} · "
                 f"Precipitation {forecast.precipitation_probability}% · "
-                f"Wind {wind} · {source}"
+                f"Wind {wind} · {source} · Driver saturation {result.saturation:.2f}"
+                f" · Blue bias {result.blue_bias:.2f}"
             )
 
         def _resize_preview(self, _event=None) -> None:
@@ -294,9 +340,10 @@ def _launch_gui(initial_cfg: Mapping[str, Any]) -> None:
             width = max(320, self.image_label.winfo_width() - 8)
             height = max(240, self.image_label.winfo_height() - 8)
             image = self.preview_result.image.copy()
-            # Keep the screen representation inside the same six-color palette.
-            # A smoothing resampler would invent intermediate monitor colors.
-            image.thumbnail((width, height), Image.Resampling.NEAREST)
+            # The saved image retains native one-pixel dithering. Area averaging
+            # here models how those tiny ink dots visually blend at normal
+            # viewing distance and avoids nearest-neighbor moire patterns.
+            image.thumbnail((width, height), Image.Resampling.BOX)
             self.photo = ImageTk.PhotoImage(image)
             self.image_label.configure(image=self.photo, text="")
 

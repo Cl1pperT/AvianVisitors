@@ -10,15 +10,21 @@ from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 from unittest.mock import patch
 
-from PIL import Image
+from PIL import Image, ImageChops
 
 from frame import display as real_panel
 
 from weather_frame import app
+from weather_frame.eink import (
+    DISPLAY_APPEARANCE_PALETTE,
+    apply_blue_bias,
+    driver_matching_palette,
+    quantize_spectra6,
+)
 from weather_frame.generate_manual_prompts import PROMPT_JOBS
 from weather_frame.generate_scenes import build_prompt, discover_style_references
 from weather_frame.preview_app import generate_eink_preview
-from weather_frame.renderer import STYLES, render_forecast
+from weather_frame.renderer import CAPTION_HEIGHT, STYLES, render_forecast
 from weather_frame.renderer import (
     available_mountains,
     mountain_component_for_forecast,
@@ -287,6 +293,9 @@ class RendererTests(unittest.TestCase):
         caption = render_forecast(forecast, caption=True, units="imperial")
         self.assertEqual(no_caption.tobytes(), metric_no_caption.tobytes())
         self.assertNotEqual(no_caption.tobytes(), caption.tobytes())
+        difference = ImageChops.difference(no_caption, caption).getbbox()
+        self.assertIsNotNone(difference)
+        self.assertEqual(difference[1], caption.height - CAPTION_HEIGHT)
 
 
 class FakeProvider:
@@ -316,6 +325,79 @@ class FakePanel:
         self.pushes.append((image.size, rotate, saturation, panel))
 
 
+class EinkPreviewTests(unittest.TestCase):
+    def test_matching_palette_mirrors_driver_saturation_blend(self):
+        self.assertEqual(
+            driver_matching_palette(0.6),
+            (
+                (0, 0, 0),
+                (198, 200, 201),
+                (226, 216, 42),
+                (195, 43, 45),
+                (36, 35, 158),
+                (34, 156, 42),
+            ),
+        )
+
+    def test_quantization_uses_six_inks_and_honors_saturation(self):
+        gradient = Image.new("RGB", (256, 64))
+        gradient.putdata(
+            [
+                (x, round((x + y * 4) % 256), 255 - x)
+                for y in range(64)
+                for x in range(256)
+            ]
+        )
+        low = quantize_spectra6(gradient, 0.2)
+        high = quantize_spectra6(gradient, 0.8)
+        self.assertNotEqual(low.tobytes(), high.tobytes())
+        for image in (low, high):
+            colors = image.getcolors(maxcolors=2_000_000)
+            self.assertIsNotNone(colors)
+            self.assertTrue(
+                {color for _count, color in colors}.issubset(
+                    set(DISPLAY_APPEARANCE_PALETTE)
+                )
+            )
+
+    def test_blue_bias_is_selective_and_moves_blue_pixels_toward_blue_point(self):
+        source_blue = (80, 120, 200)
+        image = Image.new("RGB", (2, 1))
+        image.putdata(((210, 60, 45), source_blue))
+        biased = apply_blue_bias(image, amount=0.4, saturation=0.6)
+        self.assertEqual(biased.getpixel((0, 0)), (210, 60, 45))
+
+        blue_point = driver_matching_palette(0.6)[4]
+        shifted_blue = biased.getpixel((1, 0))
+        original_distance = sum(
+            abs(channel - target)
+            for channel, target in zip(source_blue, blue_point)
+        )
+        shifted_distance = sum(
+            abs(channel - target)
+            for channel, target in zip(shifted_blue, blue_point)
+        )
+        self.assertLess(shifted_distance, original_distance)
+
+        pale_sky = Image.new("RGB", (256, 64), (120, 150, 190))
+        normal = quantize_spectra6(pale_sky, saturation=0.4)
+        boosted = quantize_spectra6(
+            apply_blue_bias(pale_sky, amount=0.3, saturation=0.4),
+            saturation=0.4,
+        )
+        physical_blue = DISPLAY_APPEARANCE_PALETTE[4]
+
+        def blue_pixels(output):
+            pixels = (
+                output.get_flattened_data()
+                if hasattr(output, "get_flattened_data")
+                else output.getdata()
+            )
+            return sum(pixel == physical_blue for pixel in pixels)
+
+        self.assertGreater(blue_pixels(boosted), blue_pixels(normal))
+
+
 class PreviewAppTests(unittest.TestCase):
     def test_gui_preview_helper_is_six_color_and_has_no_side_effects(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -333,9 +415,13 @@ class PreviewAppTests(unittest.TestCase):
             self.assertIsNotNone(colors)
             self.assertLessEqual(len(colors), 6)
             self.assertTrue(
-                {color for _count, color in colors}.issubset(set(real_panel.SPECTRA6))
+                {color for _count, color in colors}.issubset(
+                    set(DISPLAY_APPEARANCE_PALETTE)
+                )
             )
             self.assertIsNone(result.source_path)
+            self.assertEqual(result.saturation, cfg["saturation"])
+            self.assertEqual(result.blue_bias, cfg["blue_bias"])
             self.assertFalse(Path(cfg["output"]).exists())
             self.assertFalse(Path(cfg["state"]).exists())
 
