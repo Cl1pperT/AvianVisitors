@@ -192,6 +192,19 @@ to one of these assets.
 back procedurally when absent. Use `"generated"` to require an asset and fail
 safely if missing, or `"procedural"` to ignore the generated library.
 
+### Manual generation with ChatGPT Plus
+
+[`manual_prompt_pack.md`](manual_prompt_pack.md) contains 36 complete prompts
+for manual use in ChatGPT Images: three prompts for every environment,
+collectively covering every weather condition. Each entry identifies the Goal
+Image to upload and the exact destination path for the downloaded PNG.
+
+Regenerate the pack after changing the prompt template or catalog:
+
+```bash
+python3 -m weather_frame.generate_manual_prompts
+```
+
 ## Physical panel
 
 The original frame installer creates `frame/.venv` with Pillow and the Inky

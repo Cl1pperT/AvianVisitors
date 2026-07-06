@@ -15,6 +15,7 @@ from PIL import Image
 from frame import display as real_panel
 
 from weather_frame import app
+from weather_frame.generate_manual_prompts import PROMPT_JOBS
 from weather_frame.generate_scenes import build_prompt, discover_style_references
 from weather_frame.renderer import STYLES, render_forecast
 from weather_frame.renderer import (
@@ -131,6 +132,19 @@ class ProviderTests(unittest.TestCase):
 
 
 class RendererTests(unittest.TestCase):
+    def test_manual_prompt_pack_covers_every_environment_and_condition(self):
+        self.assertEqual(set(PROMPT_JOBS), set(ENVIRONMENTS))
+        covered = {
+            condition
+            for conditions in PROMPT_JOBS.values()
+            for condition in conditions
+        }
+        self.assertEqual(covered, set(SCENE_CONDITIONS))
+        pack = Path(__file__).parents[1] / "manual_prompt_pack.md"
+        content = pack.read_text()
+        self.assertEqual(content.count("\n## "), 36)
+        self.assertEqual(content.count("Save result as:"), 36)
+
     def test_scene_catalog_covers_wmo_conditions_and_utah_environments(self):
         expected = {
             0: "clear", 1: "mostly_sunny", 2: "partly_cloudy", 3: "overcast",
