@@ -272,9 +272,9 @@ class RendererTests(unittest.TestCase):
 
     def test_render_is_deterministic_and_styles_differ(self):
         forecast = sample_forecast(weather_code=2, condition=Condition.CLOUDY, cloud_cover_mean=55)
-        first = render_forecast(forecast, style="woodblock")
-        second = render_forecast(forecast, style="woodblock")
-        wash = render_forecast(forecast, style="ink_wash")
+        first = render_forecast(forecast, style="woodblock", scene_source="procedural")
+        second = render_forecast(forecast, style="woodblock", scene_source="procedural")
+        wash = render_forecast(forecast, style="ink_wash", scene_source="procedural")
         digest = lambda image: hashlib.sha256(image.tobytes()).hexdigest()
         self.assertEqual(digest(first), digest(second))
         self.assertNotEqual(digest(first), digest(wash))
