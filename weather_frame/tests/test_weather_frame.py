@@ -17,6 +17,7 @@ from frame import display as real_panel
 from weather_frame import app
 from weather_frame.generate_manual_prompts import PROMPT_JOBS
 from weather_frame.generate_scenes import build_prompt, discover_style_references
+from weather_frame.preview_app import generate_eink_preview
 from weather_frame.renderer import STYLES, render_forecast
 from weather_frame.renderer import (
     available_mountains,
@@ -313,6 +314,30 @@ class FakePanel:
         if self.fail:
             raise RuntimeError("panel unavailable")
         self.pushes.append((image.size, rotate, saturation, panel))
+
+
+class PreviewAppTests(unittest.TestCase):
+    def test_gui_preview_helper_is_six_color_and_has_no_side_effects(self):
+        with tempfile.TemporaryDirectory() as directory:
+            cfg = dict(app.DEFAULTS)
+            cfg.update(
+                location="Test Valley",
+                scene_source="procedural",
+                output=str(Path(directory) / "weather.png"),
+                state=str(Path(directory) / "state.json"),
+            )
+            result = generate_eink_preview(cfg, provider=FakeProvider())
+            self.assertEqual(result.image.mode, "RGB")
+            self.assertEqual(result.image.size, (real_panel.PANEL_H, real_panel.PANEL_W))
+            colors = result.image.getcolors(maxcolors=2_000_000)
+            self.assertIsNotNone(colors)
+            self.assertLessEqual(len(colors), 6)
+            self.assertTrue(
+                {color for _count, color in colors}.issubset(set(real_panel.SPECTRA6))
+            )
+            self.assertIsNone(result.source_path)
+            self.assertFalse(Path(cfg["output"]).exists())
+            self.assertFalse(Path(cfg["state"]).exists())
 
 
 class AppTests(unittest.TestCase):

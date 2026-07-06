@@ -55,6 +55,32 @@ weather_frame/.venv/bin/python -m weather_frame \
 This fetches the forecast and writes only `weather-preview.png`. It never writes
 refresh state or imports the Inky hardware driver.
 
+For an interactive desktop preview, launch the small Tkinter application:
+
+```bash
+weather_frame/.venv/bin/python -m weather_frame.preview_app
+```
+
+Enter a city or postal code and select **Generate E-Ink Preview**. The window
+fetches today's forecast, chooses a generated scene or procedural fallback, and
+shows the result after conversion to the six-color Spectra palette. **Save
+PNG…** writes the exact 1600×1200 simulated panel image. This application never
+updates the physical display or writes refresh state.
+
+If `~/.weatherframe/config.toml` exists, its location and artwork settings
+prefill the controls. A different configuration or initial location can be
+supplied explicitly:
+
+```bash
+weather_frame/.venv/bin/python -m weather_frame.preview_app \
+  --config weather_frame/config.example.toml \
+  --location "Salt Lake City, UT"
+```
+
+Tkinter ships with most desktop Python installations. On Debian or Raspberry
+Pi OS, install `python3-tk` if Python reports that `_tkinter` is unavailable.
+The GUI is intended for a desktop session, not the headless systemd service.
+
 Render the full RGB source image configured by `output` without touching the
 panel:
 
