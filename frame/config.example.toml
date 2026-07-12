@@ -22,16 +22,16 @@ shoot = true
 # bw_country = "us"    # geocoder country for the ZIP
 # shoot = true         # this Pi renders the collage
 
-hours = 24             # window shown on the frame
+hours = 168            # last 7 days; window shown on the frame
 
 # --- Titles and look (used when this Pi renders, i.e. shoot = true) ----------
 shoot_title = "Avian Visitors"
-shoot_subtitle = "Heard Today"
+shoot_subtitle = "Heard This Week"
 # shoot_headline_px = 42
 # shoot_eyebrow_px = 18
 # shoot_lowercase = false
 # shoot_mat = 0.04
-# shoot_small_floor = 0.04
+# shoot_small_floor = 0.0  # optional legacy count floor; keep 0 for exact calls × rarity sizing
 # shoot_count_exp = 0.65   # tile size vs call count; higher = the loudest birds dominate more
 
 # --- Panel ------------------------------------------------------------------

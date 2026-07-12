@@ -4,7 +4,7 @@
 Loads the real site (the LAN default http://birdnet.local, or a forwarded
 public URL) at a portrait viewport, hides the controls, sets the frame
 titles, and rewrites a few of the page's own apt.js tunables at capture time
-(cluster bias, count-to-size exponent, a rare-bird floor). The result is the
+(cluster bias, count-to-size exponent, an optional rare-bird floor). The result is the
 actual website, framed for the wall, with no changes to AvianVisitors.
 
 Needs a real headless browser, so it runs on any 64-bit capable machine, NOT
@@ -13,7 +13,7 @@ into panel pixels.
 
   pip install playwright && playwright install chromium
   python3 shoot.py --url https://bird.onethreenine.net \
-      --title "onethreenine birds" --subtitle "heard today" --out frame.png
+      --title "onethreenine birds" --subtitle "heard this week" --out frame.png
 """
 from __future__ import annotations
 
@@ -73,8 +73,9 @@ def _safe_continue(route):
 
 
 def _make_api_handler(floor_frac, window_hours, auth, species=None):
-    """Re-window action=recent (to preview busy days) and floor the rarest
-    counts so the packer draws them a little larger. With `species` set
+    """Re-window action=recent (to preview busy days). A nonzero legacy
+    `floor_frac` can inflate low counts, but it defaults off so the collage's
+    calls × rarity score always uses actual detections. With `species` set
     (--bird-weather), serve that list for recent and an empty body for the
     other views, which have no backend in that mode."""
     def handler(route):
@@ -142,7 +143,7 @@ def _make_cutout_handler(base, local_dir=None):
     return handler
 
 
-def _make_js_handler(xbias, ybias, count_exp, pad, auth, misses):
+def _make_js_handler(xbias, ybias, count_exp, pad, auth, misses, packing_budget=None):
     """Rewrite the collage tunables inside the page's apt.js at capture time."""
     def handler(route):
         try:
@@ -155,6 +156,13 @@ def _make_js_handler(xbias, ybias, count_exp, pad, auth, misses):
                 js, n = re.subn(pat, repl, js)
                 if not n:
                     misses.append(pat)
+            if packing_budget is not None:
+                pattern = (r"packingBudgetFrac:\s*n <= 4\s*\?\s*[\d.]+\s*:\s*"
+                           r"n <= 12\s*\?\s*[\d.]+\s*:\s*"
+                           r"n <= 24\s*\?\s*[\d.]+\s*:\s*[\d.]+,")
+                js, n = re.subn(pattern, f"packingBudgetFrac: {packing_budget},", js)
+                if not n:
+                    misses.append(pattern)
             route.fulfill(status=200, content_type="application/javascript; charset=utf-8", body=js)
         except Exception as e:
             print(f"apt.js rewrite skipped: {e}", file=sys.stderr)
@@ -165,9 +173,11 @@ def _make_js_handler(xbias, ybias, count_exp, pad, auth, misses):
 def shoot(url, out, *, title=None, subtitle=None, vw=600, vh=800, dsf=2,
           headline_px=42, eyebrow_px=18, lowercase=False,
           mat=0.04, collage_vh=52, cluster_xbias=1.0, cluster_ybias=1.2,
-          count_exp=0.4, cluster_pad=1, small_floor=0.04, window_hours=None,
-          timeout_ms=45000, user=None, password=None, species=None, cutout_base=None,
+          count_exp=0.4, cluster_pad=1, small_floor=0.0, window_hours=168,
+          packing_budget=None, timeout_ms=45000, user=None, password=None, species=None, cutout_base=None,
           cutout_local=None):
+    if packing_budget is not None and not 0 < packing_budget <= 0.9:
+        raise ValueError("packing_budget must be greater than 0 and at most 0.9")
     pad_side, pad_top, pad_bottom = int(vw * mat), int(vh * mat * 0.92), int(vh * mat)
     auth = "Basic " + base64.b64encode(f"{user}:{password or ''}".encode()).decode() if user else None
 
@@ -180,7 +190,8 @@ def shoot(url, out, *, title=None, subtitle=None, vw=600, vh=800, dsf=2,
             page = browser.new_context(**ctx_kw).new_page()
             misses = []
             page.route("**/birdnet-api.php**", _make_api_handler(small_floor, window_hours, auth, species))
-            page.route("**/apt.js*", _make_js_handler(cluster_xbias, cluster_ybias, count_exp, cluster_pad, auth, misses))
+            page.route("**/apt.js*", _make_js_handler(cluster_xbias, cluster_ybias, count_exp,
+                                                       cluster_pad, auth, misses, packing_budget))
             if cutout_base:
                 page.route("**/cutout.php*", _make_cutout_handler(cutout_base, cutout_local))
 
@@ -244,7 +255,7 @@ def shoot_birdweather(out, species, *, title=None, subtitle=None, timeout_ms=450
     for k, v in (("count_exp", 1.0), ("headline_px", 39), ("eyebrow_px", 17)):
         look.setdefault(k, v)
     return shoot(f"http://127.0.0.1:{port}/", out,
-                 title=title or "Avian Visitors", subtitle=subtitle or "Heard Today",
+                 title=title or "Avian Visitors", subtitle=subtitle or "Heard This Week",
                  species=species, cutout_base=RAW_ILLUSTRATIONS, cutout_local=cutout_local,
                  timeout_ms=timeout_ms, **look)
 
@@ -266,9 +277,13 @@ def main():
     ap.add_argument("--cluster-ybias", type=float, default=1.2)
     ap.add_argument("--count-exp", type=float, default=None,
                     help="count-to-size exponent; default 0.4 for the mic, 1.0 for --bird-weather")
+    ap.add_argument("--packing-budget", type=float,
+                    help="override the collage's soft bird-area fraction (0 to 0.9)")
     ap.add_argument("--cluster-pad", type=int, default=1)
-    ap.add_argument("--small-floor", type=float, default=0.04)
-    ap.add_argument("--window-hours", type=int)
+    ap.add_argument("--small-floor", type=float, default=0.0,
+                    help="legacy low-count floor fraction (default: 0, preserving actual call counts)")
+    ap.add_argument("--window-hours", type=int, default=168,
+                    help="detection window in hours (default: 168 / seven days)")
     ap.add_argument("--bird-weather", action="store_true",
                     help="render from BirdWeather data for --zip instead of a local mic")
     ap.add_argument("--zip", help="ZIP / postal code, required with --bird-weather")
@@ -298,6 +313,7 @@ def main():
         look.update(vw=a.width, vh=a.height, dsf=a.dsf, mat=a.mat, collage_vh=a.collage_vh,
                     cluster_xbias=a.cluster_xbias, cluster_ybias=a.cluster_ybias,
                     cluster_pad=a.cluster_pad, small_floor=a.small_floor, lowercase=a.lowercase,
+                    packing_budget=a.packing_budget,
                     window_hours=a.window_hours, user=a.user, password=a.password)
         try:
             shoot_birdweather(a.out, species, title=a.title, subtitle=a.subtitle,
@@ -317,6 +333,7 @@ def main():
               mat=a.mat, collage_vh=a.collage_vh, cluster_xbias=a.cluster_xbias,
               cluster_ybias=a.cluster_ybias, count_exp=count_exp, cluster_pad=a.cluster_pad,
               small_floor=a.small_floor,
+              packing_budget=a.packing_budget,
               window_hours=a.window_hours, timeout_ms=a.timeout, user=a.user, password=a.password)
     except Exception as e:
         print(f"shoot failed: {e}", file=sys.stderr)

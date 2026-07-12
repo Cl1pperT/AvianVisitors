@@ -5,7 +5,7 @@
 // Endpoints (?action=...):
 //   stats       - totals (detections, unique species, today, last hour)
 //   lifelist    - every species with first_seen, last_seen, total_count
-//   recent      - &hours=N (default 24): species heard in the window
+//   recent      - &hours=N (default 168): species heard in the window
 //   species     - &sci=<sci_name>: per-species detail page
 //   timeseries  - &days=N: daily detection counts per species
 //   firstseen   - every species' earliest detection
@@ -55,6 +55,21 @@ function one(SQLite3 $db, string $sql, array $bind = []) {
     return $r[0] ?? null;
 }
 
+// Local rarity is independent of the selected window: lifetime calls divided
+// by days since first detection. The size score requested by the collage is
+// calls-in-window × rarity weight. Cap at 12x so an ancient one-off stays
+// important without swallowing every repeatedly-heard visitor.
+function rarity_metrics(int $windowCount, int $lifetimeCount, ?string $firstSeen): array {
+    $first = $firstSeen ? strtotime($firstSeen) : false;
+    if ($lifetimeCount <= 0 || $first === false) {
+        return ['weight' => 1.0, 'score' => (float)max(1, $windowCount), 'rate' => null];
+    }
+    $days = max(1, (int)ceil((time() - $first) / 86400));
+    $rate = $lifetimeCount / $days;
+    $weight = max(1.0, min(12.0, 1.0 / max(1.0 / 30.0, $rate)));
+    return ['weight' => $weight, 'score' => max(1, $windowCount) * $weight, 'rate' => $rate];
+}
+
 $action = $_GET['action'] ?? 'stats';
 
 switch ($action) {
@@ -95,15 +110,20 @@ switch ($action) {
         // Cap raised to 1,000,000 hours (~114 years) so the frontend's
         // "ALL" button can turn off the time filter without needing a
         // separate code path.
-        $hours = max(1, min(1000000, (int)($_GET['hours'] ?? 24)));
+        $hours = max(1, min(1000000, (int)($_GET['hours'] ?? 168)));
         // species-collapsed view: one row per species seen in the window,
         // with the file of its highest-confidence detection inside the window.
         $rs = rows($db,
-          "SELECT Sci_Name AS sci, Com_Name AS com, COUNT(*) AS n, MAX(Confidence) AS best_conf, "
-        . "       MAX(Date||' '||Time) AS last_seen "
-        . "FROM detections "
-        . "WHERE (julianday('now','localtime') - julianday(Date||' '||Time)) * 24 <= :hrs "
-        . "GROUP BY Sci_Name ORDER BY last_seen DESC",
+          "WITH lifetime AS ("
+        . "  SELECT Sci_Name, COUNT(*) AS total_n, MIN(Date||' '||Time) AS first_seen "
+        . "  FROM detections GROUP BY Sci_Name"
+        . ") "
+        . "SELECT d.Sci_Name AS sci, d.Com_Name AS com, COUNT(*) AS n, "
+        . "       MAX(d.Confidence) AS best_conf, MAX(d.Date||' '||d.Time) AS last_seen, "
+        . "       l.total_n AS total_n, l.first_seen AS first_seen "
+        . "FROM detections d JOIN lifetime l ON l.Sci_Name = d.Sci_Name "
+        . "WHERE (julianday('now','localtime') - julianday(d.Date||' '||d.Time)) * 24 <= :hrs "
+        . "GROUP BY d.Sci_Name ORDER BY last_seen DESC",
           [':hrs' => $hours]
         );
         // for each row, attach the file of the top-confidence detection in the window
@@ -118,6 +138,10 @@ switch ($action) {
             );
             $r['top_file'] = $best['file'] ?? null;
             $r['top_at']   = isset($best['d']) ? ($best['d'].' '.$best['t']) : null;
+            $rarity = rarity_metrics((int)$r['n'], (int)$r['total_n'], $r['first_seen'] ?? null);
+            $r['rarity_weight'] = round($rarity['weight'], 4);
+            $r['size_score'] = round($rarity['score'], 4);
+            $r['lifetime_rate_per_day'] = $rarity['rate'] === null ? null : round($rarity['rate'], 6);
         }
         echo json_encode(['hours' => $hours, 'species' => $rs, 'as_of' => date('c')]);
         break;

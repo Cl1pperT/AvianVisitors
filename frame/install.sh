@@ -120,7 +120,7 @@ elif [ "$MODE" = local ]; then
 base_url = "http://birdnet.local"
 shoot = true
 shoot_title = "Avian Visitors"
-shoot_subtitle = "Heard Today"
+shoot_subtitle = "Heard This Week"
 rotate = 90          # flip to 270 if the frame hangs the other way up
 saturation = 0.6
 timeout = 45
@@ -152,7 +152,7 @@ else
     printf '%s\n' 'bw_country = "us"    # geocoder country for the ZIP'
     printf '%s\n' 'shoot = true         # this Pi renders the collage'
     printf '%s\n' 'shoot_title = "Avian Visitors"'
-    printf '%s\n' 'shoot_subtitle = "Heard Today"'
+    printf '%s\n' 'shoot_subtitle = "Heard This Week"'
     printf '%s\n' 'rotate = 90          # flip to 270 if the frame hangs the other way up'
     printf '%s\n' 'saturation = 0.6'
   } > "$CONFIG"

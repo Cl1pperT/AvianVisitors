@@ -146,7 +146,9 @@
   }
   applyTheme(readLS('bird:theme', 'light'));
   var winBtns = [].slice.call(winPick.querySelectorAll('button'));
-  var currentHours = +readLS('bird:window', '24') || 24;
+  // Seven days is the product default. A visitor's explicit picker choice is
+  // still remembered in localStorage and wins on subsequent loads.
+  var currentHours = +readLS('bird:window', '168') || 168;
   winBtns.forEach(function (b) {
     b.setAttribute('aria-current', (+b.dataset.h === currentHours) ? 'true' : 'false');
   });
@@ -249,6 +251,33 @@
       ellipseAspectBias: 2.1,
     };
   }
+  // A rarity factor must be independent of the selected window's call count;
+  // otherwise `calls * (1 / calls)` collapses every species to the same size.
+  // Use the viewer's established local baseline: lifetime calls per observed
+  // day. One call/day or more is 1x; progressively rarer local visitors gain
+  // weight, capped at 12x so an ancient one-off cannot consume the collage.
+  var RARITY_RATE_FLOOR = 1 / 30;
+  var RARITY_WEIGHT_CAP = 12;
+  function rarityMetrics(s, lifetime) {
+    var calls = Math.max(1, +s.n || 1);
+    var explicit = +s.rarity_weight;
+    if (isFinite(explicit) && explicit > 0) {
+      var explicitWeight = Math.max(1, Math.min(RARITY_WEIGHT_CAP, explicit));
+      return { weight: explicitWeight, score: calls * explicitWeight, rate: null };
+    }
+    lifetime = lifetime || {};
+    var total = +(s.total_n || lifetime.n || 0);
+    var firstSeen = s.first_seen || lifetime.first_seen || '';
+    var firstMs = Date.parse(String(firstSeen).replace(' ', 'T'));
+    if (!total || isNaN(firstMs)) return { weight: 1, score: calls, rate: null };
+    var days = Math.max(1, Math.ceil((Date.now() - firstMs) / 86400000));
+    var rate = total / days;
+    var weight = 1 / Math.max(RARITY_RATE_FLOOR, rate);
+    weight = Math.max(1, Math.min(RARITY_WEIGHT_CAP, weight));
+    return { weight: weight, score: calls * weight, rate: rate };
+  }
+  // Small, deterministic hook for the repository's browser/unit checks.
+  window.__avianRarityMetrics = rarityMetrics;
   var GRID_STRIDE = 4; // viewport px per occupancy cell; smaller = slower
   var COLLAGE_PAD = 3; // breathing room (grid cells) around each bird;
                        // eased on narrow screens where birds are smaller.
@@ -430,6 +459,10 @@
     // final area yet). area-from-count uses a sub-linear exponent so
     // a 400-detection bird is visibly larger than a 30-detection bird
     // without dwarfing it.
+    var lifetimeBySci = {};
+    if (typeof DATA !== 'undefined' && DATA && DATA.lifelist && DATA.lifelist.species) {
+      DATA.lifelist.species.forEach(function (s) { lifetimeBySci[s.sci] = s; });
+    }
     var tiles = items.map(function (s) {
       var base = slugify(s.sci);
       // Pose: perched by default, rarely flight (FLY_PROB), and only if a
@@ -446,10 +479,17 @@
       if (!mask) return null;
       var d = DIMS[slug];
       var n = +s.n; if (!n || isNaN(n)) n = 1;
+      var rarity = rarityMetrics(s, lifetimeBySci[s.sci]);
+      // Retain these on the row for accessible titles and diagnostics.
+      s.rarity_weight = rarity.weight;
+      s.size_score = rarity.score;
       return {
         mask: mask, data: s, pose: pose,
         ar: d ? d[0] / d[1] : 1.4,
-        score: Math.pow(Math.max(1, n), T.countExp),
+        // The requested ranking is calls-in-window × local-rarity weight.
+        // countExp compresses only the visual area range after that score has
+        // established ordering, so outliers remain legible rather than huge.
+        score: Math.pow(Math.max(1, rarity.score), T.countExp),
       };
     }).filter(Boolean);
     // Reroll on re-entry: forget pose choices for species no longer in window.
@@ -554,7 +594,9 @@
       // detections in a session; "heard" implies distinct individuals.
       var titleN = +s.n || 0;
       btn.title = (s.com || s.sci) + ' · ' + fmtN(titleN) + ' ' +
-        (titleN === 1 ? 'call' : 'calls') + ' ' + windowLabel(currentHours);
+        (titleN === 1 ? 'call' : 'calls') + ' ' + windowLabel(currentHours) +
+        ' · rarity ×' + (+s.rarity_weight || 1).toFixed(1) +
+        ' · size score ' + (+s.size_score || titleN).toFixed(1);
       btn.style.left   = r.x + 'px';
       btn.style.top    = r.y + 'px';
       btn.style.width  = r.fullW + 'px';

@@ -44,13 +44,13 @@ DEFAULTS = {
     "zip": "",              # BirdWeather ZIP / postal code (with species_source = "birdweather")
     "bw_days": 7,           # BirdWeather lookback window, in days
     "bw_country": "us",     # geocoder country for the ZIP
-    "hours": 24,
+    "hours": 168,
     "image": "",            # local PNG written by the shooter
     "image_url": "",        # or a published screenshot URL
     "shoot": False,         # or capture inline (needs a browser; the Zero 2 W handles it)
-    "shoot_title": None, "shoot_subtitle": None,
+    "shoot_title": None, "shoot_subtitle": "Heard This Week",
     "shoot_headline_px": 42, "shoot_eyebrow_px": 18, "shoot_lowercase": False,
-    "shoot_mat": 0.04, "shoot_small_floor": 0.04, "shoot_count_exp": 0.65,
+    "shoot_mat": 0.04, "shoot_small_floor": 0.0, "shoot_count_exp": 0.65,
     "mat": 0.0,             # extra global shrink of the content inside the A5 opening
     "rotate": 90,           # 90 or 270 if the frame hangs the other way up
     "saturation": 0.6,
@@ -322,7 +322,7 @@ def obtain_image(cfg, species=None):
         out = os.path.join(os.path.expanduser(cfg["cache"]), "frame.png")
         os.makedirs(os.path.dirname(out), exist_ok=True)
         shoot_birdweather(out, species, title=cfg["shoot_title"], subtitle=cfg["shoot_subtitle"],
-                          timeout_ms=cfg["timeout"] * 1000)
+                          window_hours=cfg["hours"], timeout_ms=cfg["timeout"] * 1000)
         return Image.open(out).convert("RGB")
     if cfg["shoot"]:
         from shoot import shoot
@@ -332,6 +332,7 @@ def obtain_image(cfg, species=None):
               headline_px=cfg["shoot_headline_px"], eyebrow_px=cfg["shoot_eyebrow_px"],
               lowercase=cfg["shoot_lowercase"], mat=cfg["shoot_mat"],
               small_floor=cfg["shoot_small_floor"], count_exp=cfg["shoot_count_exp"], timeout_ms=cfg["timeout"] * 1000,
+              window_hours=cfg["hours"],
               user=cfg["basic_user"], password=cfg["basic_pass"])
         return Image.open(out).convert("RGB")
     src = cfg["image_url"] or cfg["image"]
