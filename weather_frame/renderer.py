@@ -433,15 +433,28 @@ def render_forecast(
     units: str = "imperial",
     scene_source: str = "auto",
     environment: str = "auto",
+    scene_image: Image.Image | None = None,
 ) -> Image.Image:
     """Render a full-bleed image in the panel's native 1600x1200 orientation."""
     if style not in STYLES:
         raise ValueError(f"unknown render style {style!r}")
     if units not in ("imperial", "metric"):
         raise ValueError(f"units must be 'imperial' or 'metric', not {units!r}")
-    if scene_source not in ("auto", "generated", "procedural"):
-        raise ValueError("scene_source must be 'auto', 'generated', or 'procedural'")
+    if scene_source not in ("auto", "generated", "procedural", "ai"):
+        raise ValueError("scene_source must be 'auto', 'generated', 'procedural', or 'ai'")
     palette = STYLES[style]
+
+    if scene_image is not None:
+        generated = ImageOps.fit(
+            scene_image.convert("RGB"),
+            (panel.PANEL_H, panel.PANEL_W),
+            method=Image.Resampling.LANCZOS,
+        )
+        if caption:
+            _caption(ImageDraw.Draw(generated), forecast, palette, generated.width, generated.height, units)
+        return generated
+    if scene_source == "ai":
+        raise ValueError("scene_source 'ai' requires a generated scene image")
 
     if scene_source != "procedural":
         generated, environment_slug, condition_slug, path = _load_generated_scene(

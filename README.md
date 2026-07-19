@@ -123,7 +123,7 @@ For BirdNET-backed collages, bird area is ranked by the rarity-weighted score de
 
 ## Weather frame
 
-[`weather_frame/`](weather_frame/README.md) is an opt-in morning forecast display built on the same panel support. It makes real Open-Meteo geocoding and forecast calls, selects a pre-generated watercolor scene when one exists, and otherwise renders a deterministic procedural scene. It does not call an image model at display time.
+[`weather_frame/`](weather_frame/README.md) is an opt-in morning forecast display built on the same panel support. It makes real Open-Meteo geocoding and forecast calls, selects a pre-generated watercolor scene when one exists, and otherwise renders a deterministic procedural scene. An optional live AI source ranks five activities through the sibling `season` project and asks Gemini to include one or two in today's image.
 
 On macOS, the Tkinter preview app lets you choose a location, scene source, environment, caption setting, and fixture/live weather before touching e-ink hardware:
 

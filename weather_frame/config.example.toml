@@ -9,8 +9,9 @@ country_code = "US"           # optional ISO-3166 two-letter filter
 units = "imperial"            # "imperial" or "metric"; artwork uses metric internally
 style = "woodblock"           # "woodblock" or "ink_wash"
 caption = false               # location/date/condition/high-low footer
-scene_source = "auto"         # use generated scene when available, otherwise procedural
+scene_source = "auto"         # auto, generated, procedural, or live forecast-aware "ai"
 environment = "auto"          # rotate generated Utah scenes, or set a catalog slug
+# gemini_key = ""              # or export GEMINI_API_KEY when scene_source = "ai"
 
 output = "~/.weatherframe/weather.png"
 state = "~/.weatherframe/state.json"

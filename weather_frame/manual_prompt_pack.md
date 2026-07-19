@@ -39,7 +39,8 @@ watercolor washes on subtly textured cold-pressed paper; layered wet-on-wet
 skies; confident broken-edged brush shapes; rich but natural pigment variation;
 detailed enough to identify terrain and vegetation, but unmistakably painted.
 Use the reference for medium, brushwork, edge softness, pigment granulation,
-detail density, and atmosphere only. Do not copy its exact cloud arrangement.
+detail density, and atmosphere only. Do not copy its exact mountains, tree
+placement, or cloud arrangement.
 
 E-ink color design:
 Build the image around six strong pigment families that survive Spectra-6
@@ -55,9 +56,13 @@ viewpoint with deep foreground, middle ground, recognizable main landform, and
 weather-dominant sky. Keep important peaks and weather features away from the
 outermost 3% so display rotation cannot clip them. No split panels or collage.
 
+Activity direction:
+Keep the landscape unoccupied; no specific activity is requested.
+
 Constraints:
-No people, animals, vehicles, buildings, roads, signs, flags, lettering, map
-labels, captions, borders, frames, signatures, logos, or watermarks. No
+No animals, buildings, roads, signs, flags, lettering, map labels, captions,
+borders, frames, signatures, logos, or watermarks. People and activity gear are
+allowed only when explicitly requested in the Activity direction. No
 photorealism, 3D rendering, vector art, flat clip art, paint-by-number shapes,
 anime, or fantasy geography. Do not imitate a named living artist.
 ```
@@ -110,9 +115,13 @@ viewpoint with deep foreground, middle ground, recognizable main landform, and
 weather-dominant sky. Keep important peaks and weather features away from the
 outermost 3% so display rotation cannot clip them. No split panels or collage.
 
+Activity direction:
+Keep the landscape unoccupied; no specific activity is requested.
+
 Constraints:
-No people, animals, vehicles, buildings, roads, signs, flags, lettering, map
-labels, captions, borders, frames, signatures, logos, or watermarks. No
+No animals, buildings, roads, signs, flags, lettering, map labels, captions,
+borders, frames, signatures, logos, or watermarks. People and activity gear are
+allowed only when explicitly requested in the Activity direction. No
 photorealism, 3D rendering, vector art, flat clip art, paint-by-number shapes,
 anime, or fantasy geography. Do not imitate a named living artist.
 ```
@@ -165,9 +174,13 @@ viewpoint with deep foreground, middle ground, recognizable main landform, and
 weather-dominant sky. Keep important peaks and weather features away from the
 outermost 3% so display rotation cannot clip them. No split panels or collage.
 
+Activity direction:
+Keep the landscape unoccupied; no specific activity is requested.
+
 Constraints:
-No people, animals, vehicles, buildings, roads, signs, flags, lettering, map
-labels, captions, borders, frames, signatures, logos, or watermarks. No
+No animals, buildings, roads, signs, flags, lettering, map labels, captions,
+borders, frames, signatures, logos, or watermarks. People and activity gear are
+allowed only when explicitly requested in the Activity direction. No
 photorealism, 3D rendering, vector art, flat clip art, paint-by-number shapes,
 anime, or fantasy geography. Do not imitate a named living artist.
 ```
@@ -220,9 +233,13 @@ viewpoint with deep foreground, middle ground, recognizable main landform, and
 weather-dominant sky. Keep important peaks and weather features away from the
 outermost 3% so display rotation cannot clip them. No split panels or collage.
 
+Activity direction:
+Keep the landscape unoccupied; no specific activity is requested.
+
 Constraints:
-No people, animals, vehicles, buildings, roads, signs, flags, lettering, map
-labels, captions, borders, frames, signatures, logos, or watermarks. No
+No animals, buildings, roads, signs, flags, lettering, map labels, captions,
+borders, frames, signatures, logos, or watermarks. People and activity gear are
+allowed only when explicitly requested in the Activity direction. No
 photorealism, 3D rendering, vector art, flat clip art, paint-by-number shapes,
 anime, or fantasy geography. Do not imitate a named living artist.
 ```
@@ -275,9 +292,13 @@ viewpoint with deep foreground, middle ground, recognizable main landform, and
 weather-dominant sky. Keep important peaks and weather features away from the
 outermost 3% so display rotation cannot clip them. No split panels or collage.
 
+Activity direction:
+Keep the landscape unoccupied; no specific activity is requested.
+
 Constraints:
-No people, animals, vehicles, buildings, roads, signs, flags, lettering, map
-labels, captions, borders, frames, signatures, logos, or watermarks. No
+No animals, buildings, roads, signs, flags, lettering, map labels, captions,
+borders, frames, signatures, logos, or watermarks. People and activity gear are
+allowed only when explicitly requested in the Activity direction. No
 photorealism, 3D rendering, vector art, flat clip art, paint-by-number shapes,
 anime, or fantasy geography. Do not imitate a named living artist.
 ```
@@ -330,9 +351,13 @@ viewpoint with deep foreground, middle ground, recognizable main landform, and
 weather-dominant sky. Keep important peaks and weather features away from the
 outermost 3% so display rotation cannot clip them. No split panels or collage.
 
+Activity direction:
+Keep the landscape unoccupied; no specific activity is requested.
+
 Constraints:
-No people, animals, vehicles, buildings, roads, signs, flags, lettering, map
-labels, captions, borders, frames, signatures, logos, or watermarks. No
+No animals, buildings, roads, signs, flags, lettering, map labels, captions,
+borders, frames, signatures, logos, or watermarks. People and activity gear are
+allowed only when explicitly requested in the Activity direction. No
 photorealism, 3D rendering, vector art, flat clip art, paint-by-number shapes,
 anime, or fantasy geography. Do not imitate a named living artist.
 ```
@@ -385,9 +410,13 @@ viewpoint with deep foreground, middle ground, recognizable main landform, and
 weather-dominant sky. Keep important peaks and weather features away from the
 outermost 3% so display rotation cannot clip them. No split panels or collage.
 
+Activity direction:
+Keep the landscape unoccupied; no specific activity is requested.
+
 Constraints:
-No people, animals, vehicles, buildings, roads, signs, flags, lettering, map
-labels, captions, borders, frames, signatures, logos, or watermarks. No
+No animals, buildings, roads, signs, flags, lettering, map labels, captions,
+borders, frames, signatures, logos, or watermarks. People and activity gear are
+allowed only when explicitly requested in the Activity direction. No
 photorealism, 3D rendering, vector art, flat clip art, paint-by-number shapes,
 anime, or fantasy geography. Do not imitate a named living artist.
 ```
@@ -440,9 +469,13 @@ viewpoint with deep foreground, middle ground, recognizable main landform, and
 weather-dominant sky. Keep important peaks and weather features away from the
 outermost 3% so display rotation cannot clip them. No split panels or collage.
 
+Activity direction:
+Keep the landscape unoccupied; no specific activity is requested.
+
 Constraints:
-No people, animals, vehicles, buildings, roads, signs, flags, lettering, map
-labels, captions, borders, frames, signatures, logos, or watermarks. No
+No animals, buildings, roads, signs, flags, lettering, map labels, captions,
+borders, frames, signatures, logos, or watermarks. People and activity gear are
+allowed only when explicitly requested in the Activity direction. No
 photorealism, 3D rendering, vector art, flat clip art, paint-by-number shapes,
 anime, or fantasy geography. Do not imitate a named living artist.
 ```
@@ -495,9 +528,13 @@ viewpoint with deep foreground, middle ground, recognizable main landform, and
 weather-dominant sky. Keep important peaks and weather features away from the
 outermost 3% so display rotation cannot clip them. No split panels or collage.
 
+Activity direction:
+Keep the landscape unoccupied; no specific activity is requested.
+
 Constraints:
-No people, animals, vehicles, buildings, roads, signs, flags, lettering, map
-labels, captions, borders, frames, signatures, logos, or watermarks. No
+No animals, buildings, roads, signs, flags, lettering, map labels, captions,
+borders, frames, signatures, logos, or watermarks. People and activity gear are
+allowed only when explicitly requested in the Activity direction. No
 photorealism, 3D rendering, vector art, flat clip art, paint-by-number shapes,
 anime, or fantasy geography. Do not imitate a named living artist.
 ```
@@ -550,9 +587,13 @@ viewpoint with deep foreground, middle ground, recognizable main landform, and
 weather-dominant sky. Keep important peaks and weather features away from the
 outermost 3% so display rotation cannot clip them. No split panels or collage.
 
+Activity direction:
+Keep the landscape unoccupied; no specific activity is requested.
+
 Constraints:
-No people, animals, vehicles, buildings, roads, signs, flags, lettering, map
-labels, captions, borders, frames, signatures, logos, or watermarks. No
+No animals, buildings, roads, signs, flags, lettering, map labels, captions,
+borders, frames, signatures, logos, or watermarks. People and activity gear are
+allowed only when explicitly requested in the Activity direction. No
 photorealism, 3D rendering, vector art, flat clip art, paint-by-number shapes,
 anime, or fantasy geography. Do not imitate a named living artist.
 ```
@@ -605,9 +646,13 @@ viewpoint with deep foreground, middle ground, recognizable main landform, and
 weather-dominant sky. Keep important peaks and weather features away from the
 outermost 3% so display rotation cannot clip them. No split panels or collage.
 
+Activity direction:
+Keep the landscape unoccupied; no specific activity is requested.
+
 Constraints:
-No people, animals, vehicles, buildings, roads, signs, flags, lettering, map
-labels, captions, borders, frames, signatures, logos, or watermarks. No
+No animals, buildings, roads, signs, flags, lettering, map labels, captions,
+borders, frames, signatures, logos, or watermarks. People and activity gear are
+allowed only when explicitly requested in the Activity direction. No
 photorealism, 3D rendering, vector art, flat clip art, paint-by-number shapes,
 anime, or fantasy geography. Do not imitate a named living artist.
 ```
@@ -660,9 +705,13 @@ viewpoint with deep foreground, middle ground, recognizable main landform, and
 weather-dominant sky. Keep important peaks and weather features away from the
 outermost 3% so display rotation cannot clip them. No split panels or collage.
 
+Activity direction:
+Keep the landscape unoccupied; no specific activity is requested.
+
 Constraints:
-No people, animals, vehicles, buildings, roads, signs, flags, lettering, map
-labels, captions, borders, frames, signatures, logos, or watermarks. No
+No animals, buildings, roads, signs, flags, lettering, map labels, captions,
+borders, frames, signatures, logos, or watermarks. People and activity gear are
+allowed only when explicitly requested in the Activity direction. No
 photorealism, 3D rendering, vector art, flat clip art, paint-by-number shapes,
 anime, or fantasy geography. Do not imitate a named living artist.
 ```
@@ -715,9 +764,13 @@ viewpoint with deep foreground, middle ground, recognizable main landform, and
 weather-dominant sky. Keep important peaks and weather features away from the
 outermost 3% so display rotation cannot clip them. No split panels or collage.
 
+Activity direction:
+Keep the landscape unoccupied; no specific activity is requested.
+
 Constraints:
-No people, animals, vehicles, buildings, roads, signs, flags, lettering, map
-labels, captions, borders, frames, signatures, logos, or watermarks. No
+No animals, buildings, roads, signs, flags, lettering, map labels, captions,
+borders, frames, signatures, logos, or watermarks. People and activity gear are
+allowed only when explicitly requested in the Activity direction. No
 photorealism, 3D rendering, vector art, flat clip art, paint-by-number shapes,
 anime, or fantasy geography. Do not imitate a named living artist.
 ```
@@ -770,9 +823,13 @@ viewpoint with deep foreground, middle ground, recognizable main landform, and
 weather-dominant sky. Keep important peaks and weather features away from the
 outermost 3% so display rotation cannot clip them. No split panels or collage.
 
+Activity direction:
+Keep the landscape unoccupied; no specific activity is requested.
+
 Constraints:
-No people, animals, vehicles, buildings, roads, signs, flags, lettering, map
-labels, captions, borders, frames, signatures, logos, or watermarks. No
+No animals, buildings, roads, signs, flags, lettering, map labels, captions,
+borders, frames, signatures, logos, or watermarks. People and activity gear are
+allowed only when explicitly requested in the Activity direction. No
 photorealism, 3D rendering, vector art, flat clip art, paint-by-number shapes,
 anime, or fantasy geography. Do not imitate a named living artist.
 ```
@@ -825,9 +882,13 @@ viewpoint with deep foreground, middle ground, recognizable main landform, and
 weather-dominant sky. Keep important peaks and weather features away from the
 outermost 3% so display rotation cannot clip them. No split panels or collage.
 
+Activity direction:
+Keep the landscape unoccupied; no specific activity is requested.
+
 Constraints:
-No people, animals, vehicles, buildings, roads, signs, flags, lettering, map
-labels, captions, borders, frames, signatures, logos, or watermarks. No
+No animals, buildings, roads, signs, flags, lettering, map labels, captions,
+borders, frames, signatures, logos, or watermarks. People and activity gear are
+allowed only when explicitly requested in the Activity direction. No
 photorealism, 3D rendering, vector art, flat clip art, paint-by-number shapes,
 anime, or fantasy geography. Do not imitate a named living artist.
 ```
@@ -880,9 +941,13 @@ viewpoint with deep foreground, middle ground, recognizable main landform, and
 weather-dominant sky. Keep important peaks and weather features away from the
 outermost 3% so display rotation cannot clip them. No split panels or collage.
 
+Activity direction:
+Keep the landscape unoccupied; no specific activity is requested.
+
 Constraints:
-No people, animals, vehicles, buildings, roads, signs, flags, lettering, map
-labels, captions, borders, frames, signatures, logos, or watermarks. No
+No animals, buildings, roads, signs, flags, lettering, map labels, captions,
+borders, frames, signatures, logos, or watermarks. People and activity gear are
+allowed only when explicitly requested in the Activity direction. No
 photorealism, 3D rendering, vector art, flat clip art, paint-by-number shapes,
 anime, or fantasy geography. Do not imitate a named living artist.
 ```
@@ -935,9 +1000,13 @@ viewpoint with deep foreground, middle ground, recognizable main landform, and
 weather-dominant sky. Keep important peaks and weather features away from the
 outermost 3% so display rotation cannot clip them. No split panels or collage.
 
+Activity direction:
+Keep the landscape unoccupied; no specific activity is requested.
+
 Constraints:
-No people, animals, vehicles, buildings, roads, signs, flags, lettering, map
-labels, captions, borders, frames, signatures, logos, or watermarks. No
+No animals, buildings, roads, signs, flags, lettering, map labels, captions,
+borders, frames, signatures, logos, or watermarks. People and activity gear are
+allowed only when explicitly requested in the Activity direction. No
 photorealism, 3D rendering, vector art, flat clip art, paint-by-number shapes,
 anime, or fantasy geography. Do not imitate a named living artist.
 ```
@@ -990,9 +1059,13 @@ viewpoint with deep foreground, middle ground, recognizable main landform, and
 weather-dominant sky. Keep important peaks and weather features away from the
 outermost 3% so display rotation cannot clip them. No split panels or collage.
 
+Activity direction:
+Keep the landscape unoccupied; no specific activity is requested.
+
 Constraints:
-No people, animals, vehicles, buildings, roads, signs, flags, lettering, map
-labels, captions, borders, frames, signatures, logos, or watermarks. No
+No animals, buildings, roads, signs, flags, lettering, map labels, captions,
+borders, frames, signatures, logos, or watermarks. People and activity gear are
+allowed only when explicitly requested in the Activity direction. No
 photorealism, 3D rendering, vector art, flat clip art, paint-by-number shapes,
 anime, or fantasy geography. Do not imitate a named living artist.
 ```
@@ -1045,9 +1118,13 @@ viewpoint with deep foreground, middle ground, recognizable main landform, and
 weather-dominant sky. Keep important peaks and weather features away from the
 outermost 3% so display rotation cannot clip them. No split panels or collage.
 
+Activity direction:
+Keep the landscape unoccupied; no specific activity is requested.
+
 Constraints:
-No people, animals, vehicles, buildings, roads, signs, flags, lettering, map
-labels, captions, borders, frames, signatures, logos, or watermarks. No
+No animals, buildings, roads, signs, flags, lettering, map labels, captions,
+borders, frames, signatures, logos, or watermarks. People and activity gear are
+allowed only when explicitly requested in the Activity direction. No
 photorealism, 3D rendering, vector art, flat clip art, paint-by-number shapes,
 anime, or fantasy geography. Do not imitate a named living artist.
 ```
@@ -1100,9 +1177,13 @@ viewpoint with deep foreground, middle ground, recognizable main landform, and
 weather-dominant sky. Keep important peaks and weather features away from the
 outermost 3% so display rotation cannot clip them. No split panels or collage.
 
+Activity direction:
+Keep the landscape unoccupied; no specific activity is requested.
+
 Constraints:
-No people, animals, vehicles, buildings, roads, signs, flags, lettering, map
-labels, captions, borders, frames, signatures, logos, or watermarks. No
+No animals, buildings, roads, signs, flags, lettering, map labels, captions,
+borders, frames, signatures, logos, or watermarks. People and activity gear are
+allowed only when explicitly requested in the Activity direction. No
 photorealism, 3D rendering, vector art, flat clip art, paint-by-number shapes,
 anime, or fantasy geography. Do not imitate a named living artist.
 ```
@@ -1155,9 +1236,13 @@ viewpoint with deep foreground, middle ground, recognizable main landform, and
 weather-dominant sky. Keep important peaks and weather features away from the
 outermost 3% so display rotation cannot clip them. No split panels or collage.
 
+Activity direction:
+Keep the landscape unoccupied; no specific activity is requested.
+
 Constraints:
-No people, animals, vehicles, buildings, roads, signs, flags, lettering, map
-labels, captions, borders, frames, signatures, logos, or watermarks. No
+No animals, buildings, roads, signs, flags, lettering, map labels, captions,
+borders, frames, signatures, logos, or watermarks. People and activity gear are
+allowed only when explicitly requested in the Activity direction. No
 photorealism, 3D rendering, vector art, flat clip art, paint-by-number shapes,
 anime, or fantasy geography. Do not imitate a named living artist.
 ```
@@ -1210,9 +1295,13 @@ viewpoint with deep foreground, middle ground, recognizable main landform, and
 weather-dominant sky. Keep important peaks and weather features away from the
 outermost 3% so display rotation cannot clip them. No split panels or collage.
 
+Activity direction:
+Keep the landscape unoccupied; no specific activity is requested.
+
 Constraints:
-No people, animals, vehicles, buildings, roads, signs, flags, lettering, map
-labels, captions, borders, frames, signatures, logos, or watermarks. No
+No animals, buildings, roads, signs, flags, lettering, map labels, captions,
+borders, frames, signatures, logos, or watermarks. People and activity gear are
+allowed only when explicitly requested in the Activity direction. No
 photorealism, 3D rendering, vector art, flat clip art, paint-by-number shapes,
 anime, or fantasy geography. Do not imitate a named living artist.
 ```
@@ -1265,9 +1354,13 @@ viewpoint with deep foreground, middle ground, recognizable main landform, and
 weather-dominant sky. Keep important peaks and weather features away from the
 outermost 3% so display rotation cannot clip them. No split panels or collage.
 
+Activity direction:
+Keep the landscape unoccupied; no specific activity is requested.
+
 Constraints:
-No people, animals, vehicles, buildings, roads, signs, flags, lettering, map
-labels, captions, borders, frames, signatures, logos, or watermarks. No
+No animals, buildings, roads, signs, flags, lettering, map labels, captions,
+borders, frames, signatures, logos, or watermarks. People and activity gear are
+allowed only when explicitly requested in the Activity direction. No
 photorealism, 3D rendering, vector art, flat clip art, paint-by-number shapes,
 anime, or fantasy geography. Do not imitate a named living artist.
 ```
@@ -1320,9 +1413,13 @@ viewpoint with deep foreground, middle ground, recognizable main landform, and
 weather-dominant sky. Keep important peaks and weather features away from the
 outermost 3% so display rotation cannot clip them. No split panels or collage.
 
+Activity direction:
+Keep the landscape unoccupied; no specific activity is requested.
+
 Constraints:
-No people, animals, vehicles, buildings, roads, signs, flags, lettering, map
-labels, captions, borders, frames, signatures, logos, or watermarks. No
+No animals, buildings, roads, signs, flags, lettering, map labels, captions,
+borders, frames, signatures, logos, or watermarks. People and activity gear are
+allowed only when explicitly requested in the Activity direction. No
 photorealism, 3D rendering, vector art, flat clip art, paint-by-number shapes,
 anime, or fantasy geography. Do not imitate a named living artist.
 ```
@@ -1375,9 +1472,13 @@ viewpoint with deep foreground, middle ground, recognizable main landform, and
 weather-dominant sky. Keep important peaks and weather features away from the
 outermost 3% so display rotation cannot clip them. No split panels or collage.
 
+Activity direction:
+Keep the landscape unoccupied; no specific activity is requested.
+
 Constraints:
-No people, animals, vehicles, buildings, roads, signs, flags, lettering, map
-labels, captions, borders, frames, signatures, logos, or watermarks. No
+No animals, buildings, roads, signs, flags, lettering, map labels, captions,
+borders, frames, signatures, logos, or watermarks. People and activity gear are
+allowed only when explicitly requested in the Activity direction. No
 photorealism, 3D rendering, vector art, flat clip art, paint-by-number shapes,
 anime, or fantasy geography. Do not imitate a named living artist.
 ```
@@ -1430,9 +1531,13 @@ viewpoint with deep foreground, middle ground, recognizable main landform, and
 weather-dominant sky. Keep important peaks and weather features away from the
 outermost 3% so display rotation cannot clip them. No split panels or collage.
 
+Activity direction:
+Keep the landscape unoccupied; no specific activity is requested.
+
 Constraints:
-No people, animals, vehicles, buildings, roads, signs, flags, lettering, map
-labels, captions, borders, frames, signatures, logos, or watermarks. No
+No animals, buildings, roads, signs, flags, lettering, map labels, captions,
+borders, frames, signatures, logos, or watermarks. People and activity gear are
+allowed only when explicitly requested in the Activity direction. No
 photorealism, 3D rendering, vector art, flat clip art, paint-by-number shapes,
 anime, or fantasy geography. Do not imitate a named living artist.
 ```
@@ -1485,9 +1590,13 @@ viewpoint with deep foreground, middle ground, recognizable main landform, and
 weather-dominant sky. Keep important peaks and weather features away from the
 outermost 3% so display rotation cannot clip them. No split panels or collage.
 
+Activity direction:
+Keep the landscape unoccupied; no specific activity is requested.
+
 Constraints:
-No people, animals, vehicles, buildings, roads, signs, flags, lettering, map
-labels, captions, borders, frames, signatures, logos, or watermarks. No
+No animals, buildings, roads, signs, flags, lettering, map labels, captions,
+borders, frames, signatures, logos, or watermarks. People and activity gear are
+allowed only when explicitly requested in the Activity direction. No
 photorealism, 3D rendering, vector art, flat clip art, paint-by-number shapes,
 anime, or fantasy geography. Do not imitate a named living artist.
 ```
@@ -1540,9 +1649,13 @@ viewpoint with deep foreground, middle ground, recognizable main landform, and
 weather-dominant sky. Keep important peaks and weather features away from the
 outermost 3% so display rotation cannot clip them. No split panels or collage.
 
+Activity direction:
+Keep the landscape unoccupied; no specific activity is requested.
+
 Constraints:
-No people, animals, vehicles, buildings, roads, signs, flags, lettering, map
-labels, captions, borders, frames, signatures, logos, or watermarks. No
+No animals, buildings, roads, signs, flags, lettering, map labels, captions,
+borders, frames, signatures, logos, or watermarks. People and activity gear are
+allowed only when explicitly requested in the Activity direction. No
 photorealism, 3D rendering, vector art, flat clip art, paint-by-number shapes,
 anime, or fantasy geography. Do not imitate a named living artist.
 ```
@@ -1595,9 +1708,13 @@ viewpoint with deep foreground, middle ground, recognizable main landform, and
 weather-dominant sky. Keep important peaks and weather features away from the
 outermost 3% so display rotation cannot clip them. No split panels or collage.
 
+Activity direction:
+Keep the landscape unoccupied; no specific activity is requested.
+
 Constraints:
-No people, animals, vehicles, buildings, roads, signs, flags, lettering, map
-labels, captions, borders, frames, signatures, logos, or watermarks. No
+No animals, buildings, roads, signs, flags, lettering, map labels, captions,
+borders, frames, signatures, logos, or watermarks. People and activity gear are
+allowed only when explicitly requested in the Activity direction. No
 photorealism, 3D rendering, vector art, flat clip art, paint-by-number shapes,
 anime, or fantasy geography. Do not imitate a named living artist.
 ```
@@ -1650,9 +1767,13 @@ viewpoint with deep foreground, middle ground, recognizable main landform, and
 weather-dominant sky. Keep important peaks and weather features away from the
 outermost 3% so display rotation cannot clip them. No split panels or collage.
 
+Activity direction:
+Keep the landscape unoccupied; no specific activity is requested.
+
 Constraints:
-No people, animals, vehicles, buildings, roads, signs, flags, lettering, map
-labels, captions, borders, frames, signatures, logos, or watermarks. No
+No animals, buildings, roads, signs, flags, lettering, map labels, captions,
+borders, frames, signatures, logos, or watermarks. People and activity gear are
+allowed only when explicitly requested in the Activity direction. No
 photorealism, 3D rendering, vector art, flat clip art, paint-by-number shapes,
 anime, or fantasy geography. Do not imitate a named living artist.
 ```
@@ -1705,9 +1826,13 @@ viewpoint with deep foreground, middle ground, recognizable main landform, and
 weather-dominant sky. Keep important peaks and weather features away from the
 outermost 3% so display rotation cannot clip them. No split panels or collage.
 
+Activity direction:
+Keep the landscape unoccupied; no specific activity is requested.
+
 Constraints:
-No people, animals, vehicles, buildings, roads, signs, flags, lettering, map
-labels, captions, borders, frames, signatures, logos, or watermarks. No
+No animals, buildings, roads, signs, flags, lettering, map labels, captions,
+borders, frames, signatures, logos, or watermarks. People and activity gear are
+allowed only when explicitly requested in the Activity direction. No
 photorealism, 3D rendering, vector art, flat clip art, paint-by-number shapes,
 anime, or fantasy geography. Do not imitate a named living artist.
 ```
@@ -1760,9 +1885,13 @@ viewpoint with deep foreground, middle ground, recognizable main landform, and
 weather-dominant sky. Keep important peaks and weather features away from the
 outermost 3% so display rotation cannot clip them. No split panels or collage.
 
+Activity direction:
+Keep the landscape unoccupied; no specific activity is requested.
+
 Constraints:
-No people, animals, vehicles, buildings, roads, signs, flags, lettering, map
-labels, captions, borders, frames, signatures, logos, or watermarks. No
+No animals, buildings, roads, signs, flags, lettering, map labels, captions,
+borders, frames, signatures, logos, or watermarks. People and activity gear are
+allowed only when explicitly requested in the Activity direction. No
 photorealism, 3D rendering, vector art, flat clip art, paint-by-number shapes,
 anime, or fantasy geography. Do not imitate a named living artist.
 ```
@@ -1815,9 +1944,13 @@ viewpoint with deep foreground, middle ground, recognizable main landform, and
 weather-dominant sky. Keep important peaks and weather features away from the
 outermost 3% so display rotation cannot clip them. No split panels or collage.
 
+Activity direction:
+Keep the landscape unoccupied; no specific activity is requested.
+
 Constraints:
-No people, animals, vehicles, buildings, roads, signs, flags, lettering, map
-labels, captions, borders, frames, signatures, logos, or watermarks. No
+No animals, buildings, roads, signs, flags, lettering, map labels, captions,
+borders, frames, signatures, logos, or watermarks. People and activity gear are
+allowed only when explicitly requested in the Activity direction. No
 photorealism, 3D rendering, vector art, flat clip art, paint-by-number shapes,
 anime, or fantasy geography. Do not imitate a named living artist.
 ```
@@ -1870,9 +2003,13 @@ viewpoint with deep foreground, middle ground, recognizable main landform, and
 weather-dominant sky. Keep important peaks and weather features away from the
 outermost 3% so display rotation cannot clip them. No split panels or collage.
 
+Activity direction:
+Keep the landscape unoccupied; no specific activity is requested.
+
 Constraints:
-No people, animals, vehicles, buildings, roads, signs, flags, lettering, map
-labels, captions, borders, frames, signatures, logos, or watermarks. No
+No animals, buildings, roads, signs, flags, lettering, map labels, captions,
+borders, frames, signatures, logos, or watermarks. People and activity gear are
+allowed only when explicitly requested in the Activity direction. No
 photorealism, 3D rendering, vector art, flat clip art, paint-by-number shapes,
 anime, or fantasy geography. Do not imitate a named living artist.
 ```
@@ -1925,9 +2062,13 @@ viewpoint with deep foreground, middle ground, recognizable main landform, and
 weather-dominant sky. Keep important peaks and weather features away from the
 outermost 3% so display rotation cannot clip them. No split panels or collage.
 
+Activity direction:
+Keep the landscape unoccupied; no specific activity is requested.
+
 Constraints:
-No people, animals, vehicles, buildings, roads, signs, flags, lettering, map
-labels, captions, borders, frames, signatures, logos, or watermarks. No
+No animals, buildings, roads, signs, flags, lettering, map labels, captions,
+borders, frames, signatures, logos, or watermarks. People and activity gear are
+allowed only when explicitly requested in the Activity direction. No
 photorealism, 3D rendering, vector art, flat clip art, paint-by-number shapes,
 anime, or fantasy geography. Do not imitate a named living artist.
 ```
@@ -1980,9 +2121,13 @@ viewpoint with deep foreground, middle ground, recognizable main landform, and
 weather-dominant sky. Keep important peaks and weather features away from the
 outermost 3% so display rotation cannot clip them. No split panels or collage.
 
+Activity direction:
+Keep the landscape unoccupied; no specific activity is requested.
+
 Constraints:
-No people, animals, vehicles, buildings, roads, signs, flags, lettering, map
-labels, captions, borders, frames, signatures, logos, or watermarks. No
+No animals, buildings, roads, signs, flags, lettering, map labels, captions,
+borders, frames, signatures, logos, or watermarks. People and activity gear are
+allowed only when explicitly requested in the Activity direction. No
 photorealism, 3D rendering, vector art, flat clip art, paint-by-number shapes,
 anime, or fantasy geography. Do not imitate a named living artist.
 ```

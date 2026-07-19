@@ -9,11 +9,16 @@ repository's local `art examples` folder. It draws every image with Pillow from
 sky fields, sun, layered landforms, clouds, virga or rain, snow, wind lines,
 hatching, and stippling. It does not use an image-generation API.
 
-The preferred artwork source is a pre-generated watercolor scene library under
+The preferred no-cost artwork source is a pre-generated watercolor scene library under
 `assets/scenes/`. It uses the same pattern as the bird illustrations: an offline
 Gemini generator combines a detailed prompt with positive style references,
 saves ordinary PNG assets, and the Raspberry Pi only reads local files. No paid
 API call occurs during the morning display update.
+
+An opt-in live `ai` source instead sends today's forecast through the sibling
+`season` package, passes its five highest-ranked activities to Gemini, and asks
+the model to depict one or two of them. This mode makes one paid image request
+each time the weather-frame command renders.
 
 When no generated scene matches, the procedural renderer falls back to the
 component library under `assets/mountains/`, organized into aligned `sun`,
@@ -110,8 +115,9 @@ country_code = "US"
 units = "imperial"       # or "metric"; affects an enabled caption only
 style = "woodblock"      # or "ink_wash"
 caption = false
-scene_source = "auto"    # generated scene when available, else procedural
+scene_source = "auto"    # auto, generated, procedural, or live "ai"
 environment = "auto"     # rotate available scenes, or choose a catalog slug
+# gemini_key = ""         # prefer exporting GEMINI_API_KEY for live AI
 
 output = "~/.weatherframe/weather.png"
 state = "~/.weatherframe/state.json"
@@ -130,6 +136,12 @@ The location is resolved through the
 [Open-Meteo Geocoding API](https://open-meteo.com/en/docs/geocoding-api).
 Use a city plus region and `country_code` to avoid ambiguous place names. The
 selected place and coordinates are logged before rendering.
+
+For `scene_source = "ai"`, keep the `season/` project beside
+`AvianVisitors/` (as in this workspace), or install it as a Python package. The
+adapter uses apparent temperature, UV, humidity, visibility, and snow depth
+when Open-Meteo supplies them. AQI defaults to 50 because this provider does
+not currently fetch the separate air-quality API.
 
 The [forecast request](https://open-meteo.com/en/docs) uses `timezone=auto` and
 one local day. Daily temperatures, precipitation, snow, sunrise/sunset, and
@@ -157,6 +169,20 @@ through the existing `frame.display` update helper, avoiding resizing or
 distortion.
 
 ## Watercolor scene generation
+
+For a live activity-aware scene, export the key and select the AI source:
+
+```bash
+export GEMINI_API_KEY='your-key'
+# In ~/.weatherframe/config.toml: scene_source = "ai"
+weather_frame/.venv/bin/python -m weather_frame \
+  --config ~/.weatherframe/config.toml \
+  --preview weather-preview.png
+```
+
+The prompt lists exactly five ranked candidates and directs Gemini to show one
+or two as small figures or recognizable equipment while preserving the
+weather-dominant landscape composition.
 
 The generator uses the same Gemini 2.5 Flash Image endpoint and API-key header
 pattern as the AvianVisitors bird generator. It attaches one of the three local
@@ -227,7 +253,8 @@ to one of these assets.
 
 `scene_source = "auto"` uses a matching generated scene when present and falls
 back procedurally when absent. Use `"generated"` to require an asset and fail
-safely if missing, or `"procedural"` to ignore the generated library.
+safely if missing, `"procedural"` to ignore the generated library, or `"ai"`
+to generate a live forecast- and activity-aware image.
 
 ### Manual generation with ChatGPT Plus
 

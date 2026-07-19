@@ -15,6 +15,7 @@ from PIL import Image, ImageChops
 from frame import display as real_panel
 
 from weather_frame import app
+from weather_frame.activities import recommend_activities
 from weather_frame.eink import (
     DISPLAY_APPEARANCE_PALETTE,
     apply_blue_bias,
@@ -22,7 +23,11 @@ from weather_frame.eink import (
     quantize_spectra6,
 )
 from weather_frame.generate_manual_prompts import PROMPT_JOBS
-from weather_frame.generate_scenes import build_prompt, discover_style_references
+from weather_frame.generate_scenes import (
+    build_daily_prompt,
+    build_prompt,
+    discover_style_references,
+)
 from weather_frame.preview_app import generate_eink_preview
 from weather_frame.renderer import CAPTION_HEIGHT, STYLES, render_forecast
 from weather_frame.renderer import (
@@ -198,6 +203,26 @@ class RendererTests(unittest.TestCase):
             self.assertEqual(references["sunny"].name, "01.png")
             self.assertEqual(references["snow"].name, "02.png")
             self.assertEqual(references["storm"].name, "03.png")
+
+    def test_daily_prompt_passes_five_ranked_activities_to_the_model(self):
+        template = Path(__file__).parents[1].joinpath("scene_prompt.template.md").read_text()
+        activities = ("Hiking", "Golf", "Fishing", "Birdwatching", "Disc golf")
+        prompt = build_daily_prompt(
+            template,
+            "mount_timpanogos",
+            "clear",
+            sample_forecast(),
+            activities,
+        )
+        for activity in activities:
+            self.assertIn(activity, prompt)
+        self.assertIn("Choose exactly one or two", prompt)
+        self.assertIn("high 27.0°C", prompt)
+
+    def test_forecast_is_ranked_into_exactly_five_activity_names(self):
+        activities = recommend_activities(sample_forecast())
+        self.assertEqual(len(activities), 5)
+        self.assertEqual(len(set(activities)), 5)
 
     def test_generated_scene_is_used_and_missing_generated_scene_is_explicit(self):
         forecast = sample_forecast()
@@ -454,6 +479,26 @@ class AppTests(unittest.TestCase):
             self.assertFalse(Path(cfg["output"]).exists())
             self.assertFalse(Path(cfg["state"]).exists())
             self.assertEqual(fake_panel.pushes, [])
+
+    def test_ai_source_generates_from_five_activity_candidates(self):
+        with tempfile.TemporaryDirectory() as directory:
+            cfg = self.config(directory)
+            cfg.update(scene_source="ai", gemini_key="test-key")
+            calls = []
+
+            def fake_generator(forecast, activities, **kwargs):
+                calls.append((forecast, activities, kwargs))
+                return Image.new("RGB", (800, 600), (12, 34, 56))
+
+            artwork, activities = app.create_artwork(
+                cfg,
+                sample_forecast(),
+                ai_generator=fake_generator,
+            )
+            self.assertEqual(len(activities), 5)
+            self.assertEqual(calls[0][1], activities)
+            self.assertEqual(calls[0][2]["api_key"], "test-key")
+            self.assertEqual(artwork.size, (1600, 1200))
 
     def test_signature_skips_second_update_and_force_overrides(self):
         with tempfile.TemporaryDirectory() as directory:

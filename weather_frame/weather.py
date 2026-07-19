@@ -27,6 +27,8 @@ DAILY_FIELDS = (
     "wind_speed_10m_max",
     "wind_gusts_10m_max",
     "wind_direction_10m_dominant",
+    "apparent_temperature_max",
+    "uv_index_max",
 )
 HOURLY_FIELDS = (
     "weather_code",
@@ -37,6 +39,9 @@ HOURLY_FIELDS = (
     "snowfall",
     "wind_speed_10m",
     "wind_direction_10m",
+    "relative_humidity_2m",
+    "visibility",
+    "snow_depth",
 )
 
 
@@ -88,6 +93,12 @@ class DailyForecast:
     sunrise: datetime
     sunset: datetime
     precipitation_period: PrecipitationPeriod
+    apparent_temperature_max_c: float | None = None
+    uv_index_max: float | None = None
+    humidity_mean_percent: float | None = None
+    visibility_mean_m: float | None = None
+    snow_depth_m: float | None = None
+    air_quality_index: int | None = None
 
 
 class ForecastProvider(Protocol):
@@ -148,6 +159,16 @@ def _first(mapping: Mapping[str, Any], key: str) -> Any:
     return values[0]
 
 
+def _optional_first(mapping: Mapping[str, Any], key: str) -> float | None:
+    values = mapping.get(key)
+    if not isinstance(values, list) or not values or values[0] is None:
+        return None
+    try:
+        return float(values[0])
+    except (TypeError, ValueError):
+        return None
+
+
 def _float(value: Any, name: str) -> float:
     try:
         return float(value)
@@ -205,6 +226,28 @@ def _mean_hourly(hourly: Mapping[str, Any], key: str) -> float:
     return float(statistics.fmean(numbers))
 
 
+def _optional_mean_hourly(hourly: Mapping[str, Any], key: str) -> float | None:
+    values = hourly.get(key)
+    if not isinstance(values, list):
+        return None
+    try:
+        numbers = [float(value) for value in values if value is not None]
+    except (TypeError, ValueError):
+        return None
+    return float(statistics.fmean(numbers)) if numbers else None
+
+
+def _optional_max_hourly(hourly: Mapping[str, Any], key: str) -> float | None:
+    values = hourly.get(key)
+    if not isinstance(values, list):
+        return None
+    try:
+        numbers = [float(value) for value in values if value is not None]
+    except (TypeError, ValueError):
+        return None
+    return max(numbers) if numbers else None
+
+
 def parse_open_meteo_forecast(
     payload: Mapping[str, Any],
     resolved: ResolvedLocation,
@@ -250,6 +293,11 @@ def parse_open_meteo_forecast(
         sunrise=sunrise,
         sunset=sunset,
         precipitation_period=_precipitation_period(hourly),
+        apparent_temperature_max_c=_optional_first(daily, "apparent_temperature_max"),
+        uv_index_max=_optional_first(daily, "uv_index_max"),
+        humidity_mean_percent=_optional_mean_hourly(hourly, "relative_humidity_2m"),
+        visibility_mean_m=_optional_mean_hourly(hourly, "visibility"),
+        snow_depth_m=_optional_max_hourly(hourly, "snow_depth"),
     )
 
 

@@ -14,6 +14,8 @@ from PIL import Image
 from frame import display as panel
 
 from .eink import apply_blue_bias, quantize_spectra6
+from .activities import recommend_activities
+from .generate_scenes import generate_daily_scene
 from .renderer import STYLES, render_forecast
 from .scene_catalog import ENVIRONMENTS
 from .weather import DailyForecast, ForecastProvider, OpenMeteoProvider
@@ -44,6 +46,7 @@ DEFAULTS: dict[str, Any] = {
     "saturation": 0.6,
     "blue_bias": 0.5,
     "panel": "",
+    "gemini_key": "",
 }
 
 
@@ -64,8 +67,8 @@ def validate_config(cfg: Mapping[str, Any]) -> None:
         raise ValueError("units must be 'imperial' or 'metric'")
     if cfg.get("style") not in STYLES:
         raise ValueError("style must be 'woodblock' or 'ink_wash'")
-    if cfg.get("scene_source") not in ("auto", "generated", "procedural"):
-        raise ValueError("scene_source must be 'auto', 'generated', or 'procedural'")
+    if cfg.get("scene_source") not in ("auto", "generated", "procedural", "ai"):
+        raise ValueError("scene_source must be 'auto', 'generated', 'procedural', or 'ai'")
     if cfg.get("environment") != "auto" and cfg.get("environment") not in ENVIRONMENTS:
         raise ValueError("environment must be 'auto' or a known environment slug")
     if not isinstance(cfg.get("caption"), bool):
@@ -134,6 +137,42 @@ def _local_now(forecast: DailyForecast, now: datetime | None) -> datetime:
     return now.astimezone(timezone)
 
 
+def create_artwork(
+    cfg: Mapping[str, Any],
+    forecast: DailyForecast,
+    *,
+    ai_generator=generate_daily_scene,
+) -> tuple[Image.Image, tuple[str, ...]]:
+    """Render artwork, using season recommendations for live AI generation."""
+    scene_source = str(cfg["scene_source"])
+    activities: tuple[str, ...] = ()
+    scene_image = None
+    if scene_source == "ai":
+        activities = recommend_activities(forecast, limit=5)
+        print(f"activity candidates: {', '.join(activities)}")
+        api_key = str(cfg.get("gemini_key") or os.environ.get("GEMINI_API_KEY") or "")
+        if not api_key:
+            raise RuntimeError(
+                "scene_source 'ai' requires GEMINI_API_KEY or gemini_key in config"
+            )
+        scene_image = ai_generator(
+            forecast,
+            activities,
+            api_key=api_key,
+            environment=str(cfg["environment"]),
+        )
+    image = render_forecast(
+        forecast,
+        style=str(cfg["style"]),
+        caption=bool(cfg["caption"]),
+        units=str(cfg["units"]),
+        scene_source=scene_source,
+        environment=str(cfg["environment"]),
+        scene_image=scene_image,
+    )
+    return image, activities
+
+
 def run(
     cfg: Mapping[str, Any],
     *,
@@ -143,6 +182,7 @@ def run(
     provider: ForecastProvider | None = None,
     panel_module=panel,
     now: datetime | None = None,
+    ai_generator=generate_daily_scene,
 ) -> str:
     """Render a forecast and optionally preview or push it.
 
@@ -154,13 +194,8 @@ def run(
         raise ValueError("preview and display modes are mutually exclusive")
 
     forecast = fetch_forecast(cfg, provider)
-    image = render_forecast(
-        forecast,
-        style=str(cfg["style"]),
-        caption=bool(cfg["caption"]),
-        units=str(cfg["units"]),
-        scene_source=str(cfg["scene_source"]),
-        environment=str(cfg["environment"]),
+    image, _activities = create_artwork(
+        cfg, forecast, ai_generator=ai_generator
     )
     image = apply_blue_bias(
         image,

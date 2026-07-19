@@ -20,6 +20,8 @@ from pathlib import Path
 from PIL import Image, ImageOps
 
 from .scene_catalog import ENVIRONMENTS, SCENE_CONDITIONS
+from .scene_catalog import choose_environment, condition_slug_for_forecast
+from .weather import DailyForecast
 
 GEMINI_URL = (
     "https://generativelanguage.googleapis.com/v1beta/models/"
@@ -36,7 +38,42 @@ def build_prompt(template: str, environment: str, condition: str) -> str:
         .replace("{environment_description}", place.description)
         .replace("{weather_name}", weather.name)
         .replace("{weather_description}", weather.description)
+        .replace(
+            "{activity_guidance}",
+            "Keep the landscape unoccupied; no specific activity is requested.",
+        )
     )
+
+
+def build_daily_prompt(
+    template: str,
+    environment: str,
+    condition: str,
+    forecast: DailyForecast,
+    activities: tuple[str, ...],
+) -> str:
+    """Build a live-forecast prompt with five season-ranked activity choices."""
+    candidates = ", ".join(activities)
+    guidance = (
+        "Today's five weather-ranked activity candidates are: "
+        f"{candidates}. Choose exactly one or two of these activities and portray "
+        "them naturally in the scene using small human figures and recognizable "
+        "equipment or traces. Keep the landscape and weather dominant. Do not "
+        "portray activities outside this list, and do not add words or labels."
+    )
+    prompt = build_prompt(template, environment, condition)
+    prompt = prompt.replace(
+        "Keep the landscape unoccupied; no specific activity is requested.", guidance
+    )
+    exact_weather = (
+        f"Exact daily forecast: high {forecast.high_c:.1f}°C, low {forecast.low_c:.1f}°C; "
+        f"precipitation {forecast.precipitation_probability}% and "
+        f"{forecast.precipitation_mm:.1f} mm; snowfall {forecast.snowfall_cm:.1f} cm; "
+        f"mean cloud cover {forecast.cloud_cover_mean:.0f}%; maximum wind "
+        f"{forecast.wind_speed_max_kmh:.0f} km/h with gusts "
+        f"{forecast.wind_gust_max_kmh:.0f} km/h."
+    )
+    return f"{prompt.rstrip()}\n\nForecast specifics:\n{exact_weather}\n"
 
 
 def discover_style_references(directory: Path) -> dict[str, Path]:
@@ -161,6 +198,64 @@ def normalize_png(data: bytes, path: Path) -> None:
     temporary = path.with_suffix(".tmp")
     image.save(temporary, format="PNG", optimize=True)
     os.replace(temporary, path)
+
+
+def image_from_response(data: bytes) -> Image.Image:
+    """Normalize model output to a full-size in-memory RGB scene."""
+    with Image.open(BytesIO(data)) as source:
+        return ImageOps.fit(
+            source.convert("RGB"),
+            OUTPUT_SIZE,
+            method=Image.Resampling.LANCZOS,
+            centering=(0.5, 0.5),
+        )
+
+
+def generate_daily_scene(
+    forecast: DailyForecast,
+    activities: tuple[str, ...],
+    *,
+    api_key: str,
+    environment: str = "auto",
+    template_path: Path | None = None,
+    styles_path: Path | None = None,
+    environment_refs_path: Path | None = None,
+) -> Image.Image:
+    """Generate one scene from today's forecast and five activity candidates."""
+    if len(activities) != 5:
+        raise ValueError("daily scene generation requires exactly five activities")
+    environment_slug = choose_environment(forecast, environment)
+    condition_slug = condition_slug_for_forecast(forecast)
+    template_path = template_path or Path(__file__).parent / "scene_prompt.template.md"
+    styles_path = styles_path or _default_styles()
+    environment_refs_path = (
+        environment_refs_path
+        or Path(__file__).parent / "assets" / "references" / "environments"
+    )
+    references = discover_style_references(styles_path)
+    style_reference = select_style_reference(condition_slug, references)
+    geography_reference = next(
+        (
+            environment_refs_path / f"{environment_slug}{suffix}"
+            for suffix in (".png", ".jpg", ".jpeg", ".webp")
+            if (environment_refs_path / f"{environment_slug}{suffix}").is_file()
+        ),
+        None,
+    )
+    prompt = build_daily_prompt(
+        template_path.read_text(),
+        environment_slug,
+        condition_slug,
+        forecast,
+        activities,
+    )
+    data = call_gemini(
+        api_key,
+        prompt,
+        style_reference=style_reference,
+        geography_reference=geography_reference,
+    )
+    return image_from_response(data)
 
 
 def _default_styles() -> Path:

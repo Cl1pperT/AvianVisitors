@@ -40,9 +40,12 @@ viewpoint with deep foreground, middle ground, recognizable main landform, and
 weather-dominant sky. Keep important peaks and weather features away from the
 outermost 3% so display rotation cannot clip them. No split panels or collage.
 
+Activity direction:
+{activity_guidance}
+
 Constraints:
-No people, animals, vehicles, buildings, roads, signs, flags, lettering, map
-labels, captions, borders, frames, signatures, logos, or watermarks. No
+No animals, buildings, roads, signs, flags, lettering, map labels, captions,
+borders, frames, signatures, logos, or watermarks. People and activity gear are
+allowed only when explicitly requested in the Activity direction. No
 photorealism, 3D rendering, vector art, flat clip art, paint-by-number shapes,
 anime, or fantasy geography. Do not imitate a named living artist.
-

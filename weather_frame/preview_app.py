@@ -15,9 +15,9 @@ from typing import Any, Mapping
 
 from PIL import Image
 
-from .app import DEFAULTS, fetch_forecast, load_config, validate_config
+from .app import DEFAULTS, create_artwork, fetch_forecast, load_config, validate_config
 from .eink import apply_blue_bias, quantize_spectra6
-from .renderer import STYLES, render_forecast
+from .renderer import STYLES
 from .scene_catalog import ENVIRONMENTS, generated_scene_path
 from .weather import DailyForecast, ForecastProvider
 
@@ -42,14 +42,7 @@ def generate_eink_preview(
     """Fetch, render, and quantize a preview without state or hardware access."""
     validate_config(cfg)
     forecast = fetch_forecast(cfg, provider)
-    artwork = render_forecast(
-        forecast,
-        style=str(cfg["style"]),
-        caption=bool(cfg["caption"]),
-        units=str(cfg["units"]),
-        scene_source=str(cfg["scene_source"]),
-        environment=str(cfg["environment"]),
-    )
+    artwork, _activities = create_artwork(cfg, forecast)
     saturation = float(cfg["saturation"])
     blue_bias = float(cfg["blue_bias"])
     artwork = apply_blue_bias(artwork, blue_bias, saturation)
@@ -58,7 +51,7 @@ def generate_eink_preview(
     environment, condition, scene_path = generated_scene_path(
         forecast, str(cfg["environment"])
     )
-    uses_scene = str(cfg["scene_source"]) != "procedural" and scene_path.is_file()
+    uses_scene = str(cfg["scene_source"]) in ("auto", "generated") and scene_path.is_file()
     return PreviewResult(
         forecast=forecast,
         image=preview,
@@ -166,7 +159,7 @@ def _launch_gui(initial_cfg: Mapping[str, Any]) -> None:
             ttk.Combobox(
                 options,
                 textvariable=self.scene_source,
-                values=("auto", "generated", "procedural"),
+                values=("auto", "generated", "procedural", "ai"),
                 state="readonly",
                 width=11,
             ).grid(row=0, column=3, padx=(0, 14))
