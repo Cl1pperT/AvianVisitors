@@ -13,21 +13,18 @@ from .generate_scenes import (
 from .scene_catalog import ENVIRONMENTS, SCENE_CONDITIONS
 
 
-# Three useful scenes per environment. Together these cover every condition in
-# the catalog at least once while repeating the most useful daily conditions.
+# One manual prompt for every active weather condition, distributed across the
+# active environments.
 PROMPT_JOBS = {
-    "mount_timpanogos": ("clear", "snow", "thunderstorm"),
-    "great_salt_lake": ("mostly_sunny", "fog", "windy"),
-    "moab_red_rocks": ("hot_dry", "virga", "rain_showers"),
-    "zion_cliffs": ("partly_cloudy", "rain", "heavy_rain"),
-    "bryce_hoodoos": ("overcast", "drizzle", "freezing_drizzle"),
-    "capitol_reef": ("freezing_rain", "melting_snow", "violent_showers"),
-    "uinta_alpine_lake": ("heavy_snow", "snow_grains", "snow_showers"),
-    "bonneville_salt_flats": ("hail_thunderstorm", "clear", "windy"),
-    "bear_lake": ("fog", "partly_cloudy", "snow"),
-    "canyonlands": ("virga", "thunderstorm", "hot_dry"),
-    "san_rafael_swell": ("rain_showers", "overcast", "heavy_rain"),
-    "cedar_breaks": ("mostly_sunny", "melting_snow", "heavy_snow"),
+    "mount_timpanogos": (
+        "clear", "mostly_sunny", "snow", "thunderstorm", "melting_snow",
+    ),
+    "moab_red_rocks": ("hot_dry", "virga", "rain_showers", "windy"),
+    "zion_cliffs": ("partly_cloudy", "rain", "heavy_rain", "violent_showers"),
+    "uinta_alpine_lake": (
+        "overcast", "freezing_rain", "heavy_snow", "snow_grains", "snow_showers",
+    ),
+    "bear_lake": ("fog", "drizzle", "hail_thunderstorm"),
 }
 
 
@@ -93,4 +90,3 @@ def main(argv=None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
-

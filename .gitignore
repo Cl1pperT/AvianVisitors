@@ -50,6 +50,11 @@ whitelist_species_list.txt
 /nbproject/private/
 .DS_Store
 
+# Local API credentials
+.env
+.env.*
+!.env.example
+
 # --- AvianVisitors: local-only material, deliberately not shipped ---
 # Claude Code session data
 .claude/

@@ -30,7 +30,9 @@ ENVIRONMENTS = {
     ),
     "moab_red_rocks": Environment(
         "Moab Red Rocks",
-        "layered red and orange Wingate sandstone cliffs, fins and rounded domes "
+        "the real red and orange Wingate sandstone cliffs, fins, and rounded domes "
+        "around Moab, with Colorado River cottonwoods and the blue La Sal Mountains "
+        "in the distance",
     ),
     "zion_cliffs": Environment(
         "Zion National Park Cliffs",
@@ -208,7 +210,7 @@ def condition_slug_for_forecast(forecast: DailyForecast) -> str:
     if code in (51, 53, 55):
         return "drizzle"
     if code in (56, 57):
-        return "freezing_drizzle"
+        return "freezing_rain"
     if code in (61, 63):
         return "rain"
     if code == 65:

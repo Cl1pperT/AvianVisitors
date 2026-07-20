@@ -184,9 +184,9 @@ The prompt lists exactly five ranked candidates and directs Gemini to show one
 or two as small figures or recognizable equipment while preserving the
 weather-dominant landscape composition.
 
-The generator uses the same Gemini 2.5 Flash Image endpoint and API-key header
-pattern as the AvianVisitors bird generator. It attaches one of the three local
-`../goalimages/` files as a positive style reference:
+The generator uses Gemini 3.1 Flash Lite Image at native 4:3, 1K output. It
+attaches one of the three local `../goalimages/` files as a positive style
+reference:
 
 - the first image for clear, warm, and partly cloudy scenes;
 - the second for snow, ice, and melting-snow scenes;
@@ -210,11 +210,16 @@ python3 -m weather_frame.generate_scenes \
 Generate that one scene with the paid Gemini API:
 
 ```bash
-export GEMINI_API_KEY='your-key'
+# From the repository root, put GEMINI_API_KEY=your-key in the ignored .env file.
 python3 -m weather_frame.generate_scenes \
   --environment mount_timpanogos \
   --condition clear
 ```
+
+The static generator reads `GEMINI_API_KEY` from the process environment first,
+then from the repository's ignored `.env` file. Copy `.env.example` to `.env` for
+a fresh setup. The key's Google Cloud project must have Gemini API billing and
+quota enabled for Flash Lite Image.
 
 Repeat `--condition` to generate a small useful set. Supplying only an
 environment generates every weather treatment for that environment:
@@ -229,9 +234,10 @@ python3 -m weather_frame.generate_scenes \
   --condition thunderstorm
 ```
 
-`--all` requests the complete environment × weather matrix and can make hundreds
-of paid calls; it is never implied. `--limit` bounds any selection, existing PNGs
-are skipped, and `--force` is required to replace one.
+`--all` requests the complete environment × weather matrix: 105 possible paid
+calls for the current catalog (currently 90 are missing). It is never implied.
+`--limit` bounds any selection, existing PNGs are skipped, and `--force` is
+required to replace one.
 
 Optional geography references follow the bird generator's anatomy-reference
 pattern. Place a photo at
@@ -241,15 +247,14 @@ style. Local references are gitignored.
 
 Available environment slugs:
 
-- `mount_timpanogos`, `great_salt_lake`, `moab_red_rocks`, `zion_cliffs`
-- `bryce_hoodoos`, `capitol_reef`, `uinta_alpine_lake`, `bonneville_salt_flats`
-- `bear_lake`, `canyonlands`, `san_rafael_swell`, `cedar_breaks`
+- `mount_timpanogos`, `moab_red_rocks`, `zion_cliffs`
+- `uinta_alpine_lake`, `bear_lake`
 
 The condition catalog covers clear, mostly sunny, partly cloudy, overcast, fog,
-drizzle, freezing drizzle, rain, heavy rain, freezing rain, snow, heavy snow,
-snow grains, rain showers, violent showers, snow showers, thunderstorms, hail,
-wind, hot/dry weather, melting snow, and virga. Every Open-Meteo WMO code maps
-to one of these assets.
+drizzle, rain, heavy rain, freezing rain, snow, heavy snow, snow grains, rain
+showers, violent showers, snow showers, thunderstorms, hail, wind, hot/dry
+weather, melting snow, and virga. Freezing drizzle forecasts use the freezing
+rain artwork so every Open-Meteo WMO code still maps to an active asset.
 
 `scene_source = "auto"` uses a matching generated scene when present and falls
 back procedurally when absent. Use `"generated"` to require an asset and fail
@@ -258,10 +263,10 @@ to generate a live forecast- and activity-aware image.
 
 ### Manual generation with ChatGPT Plus
 
-[`manual_prompt_pack.md`](manual_prompt_pack.md) contains 36 complete prompts
-for manual use in ChatGPT Images: three prompts for every environment,
-collectively covering every weather condition. Each entry identifies the Goal
-Image to upload and the exact destination path for the downloaded PNG.
+[`manual_prompt_pack.md`](manual_prompt_pack.md) contains one complete prompt for
+every active weather condition, distributed across the active environments.
+Each entry identifies the Goal Image to upload and the exact destination path
+for the downloaded PNG.
 
 Regenerate the pack after changing the prompt template or catalog:
 

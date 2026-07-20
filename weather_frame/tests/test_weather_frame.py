@@ -5,8 +5,10 @@ import json
 import tempfile
 import unittest
 import urllib.parse
+from contextlib import redirect_stdout
 from dataclasses import replace
 from datetime import date, datetime, timedelta, timezone
+from io import StringIO
 from pathlib import Path
 from unittest.mock import patch
 
@@ -24,9 +26,15 @@ from weather_frame.eink import (
 )
 from weather_frame.generate_manual_prompts import PROMPT_JOBS
 from weather_frame.generate_scenes import (
+    GEMINI_MODEL,
+    GEMINI_URL,
+    build_gemini_payload,
     build_daily_prompt,
     build_prompt,
     discover_style_references,
+    image_bytes_from_response,
+    load_gemini_api_key,
+    main as generate_scenes_main,
 )
 from weather_frame.preview_app import generate_eink_preview
 from weather_frame.renderer import CAPTION_HEIGHT, STYLES, render_forecast
@@ -154,14 +162,15 @@ class RendererTests(unittest.TestCase):
         self.assertEqual(covered, set(SCENE_CONDITIONS))
         pack = Path(__file__).parents[1] / "manual_prompt_pack.md"
         content = pack.read_text()
-        self.assertEqual(content.count("\n## "), 36)
-        self.assertEqual(content.count("Save result as:"), 36)
+        prompt_count = sum(len(conditions) for conditions in PROMPT_JOBS.values())
+        self.assertEqual(content.count("\n## "), prompt_count)
+        self.assertEqual(content.count("Save result as:"), prompt_count)
 
     def test_scene_catalog_covers_wmo_conditions_and_utah_environments(self):
         expected = {
             0: "clear", 1: "mostly_sunny", 2: "partly_cloudy", 3: "overcast",
             45: "fog", 48: "fog", 51: "drizzle", 55: "drizzle",
-            56: "freezing_drizzle", 57: "freezing_drizzle",
+            56: "freezing_rain", 57: "freezing_rain",
             61: "rain", 63: "rain", 65: "heavy_rain",
             66: "freezing_rain", 67: "freezing_rain",
             71: "snow", 73: "snow", 75: "heavy_snow", 77: "snow_grains",
@@ -179,12 +188,81 @@ class RendererTests(unittest.TestCase):
             )
             with self.subTest(code=code):
                 self.assertEqual(condition_slug_for_forecast(forecast), slug)
-        self.assertIn("mount_timpanogos", ENVIRONMENTS)
-        self.assertIn("great_salt_lake", ENVIRONMENTS)
-        self.assertIn("moab_red_rocks", ENVIRONMENTS)
-        self.assertIn("zion_cliffs", ENVIRONMENTS)
-        self.assertGreaterEqual(len(ENVIRONMENTS), 10)
-        self.assertGreaterEqual(len(SCENE_CONDITIONS), 20)
+        self.assertEqual(
+            tuple(ENVIRONMENTS),
+            (
+                "mount_timpanogos",
+                "moab_red_rocks",
+                "zion_cliffs",
+                "uinta_alpine_lake",
+                "bear_lake",
+            ),
+        )
+        self.assertEqual(len(SCENE_CONDITIONS), 21)
+
+    def test_gemini_generator_uses_flash_lite_v1(self):
+        self.assertEqual(GEMINI_MODEL, "gemini-3.1-flash-lite-image")
+        self.assertEqual(
+            GEMINI_URL,
+            "https://generativelanguage.googleapis.com/v1/models/"
+            "gemini-3.1-flash-lite-image:generateContent",
+        )
+
+    def test_gemini_payload_requests_image_only_4_by_3_at_1k(self):
+        payload = build_gemini_payload(
+            "paint this",
+            style_reference=None,
+            geography_reference=None,
+        )
+        self.assertEqual(payload["contents"][0]["role"], "user")
+        config = payload["generationConfig"]
+        self.assertEqual(config["responseModalities"], ["IMAGE"])
+        self.assertEqual(
+            config["imageConfig"],
+            {"aspectRatio": "4:3", "imageSize": "1K"},
+        )
+
+    def test_gemini_response_ignores_thought_image(self):
+        response = {
+            "candidates": [{
+                "content": {"parts": [
+                    {"thought": True, "inlineData": {
+                        "mimeType": "image/png",
+                        "data": "dGhvdWdodA==",
+                    }},
+                    {"inlineData": {
+                        "mimeType": "image/png",
+                        "data": "ZmluYWw=",
+                    }},
+                ]}
+            }]
+        }
+        self.assertEqual(image_bytes_from_response(response), b"final")
+
+    def test_generator_skips_existing_scene_without_calling_gemini(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output = Path(directory)
+            scene = output / "mount_timpanogos" / "clear.png"
+            scene.parent.mkdir()
+            scene.write_bytes(b"existing scene")
+            with patch("weather_frame.generate_scenes.call_gemini") as gemini:
+                with redirect_stdout(StringIO()):
+                    result = generate_scenes_main([
+                        "--environment", "mount_timpanogos",
+                        "--condition", "clear",
+                        "--out", str(output),
+                        "--gemini-key", "test-key",
+                    ])
+            self.assertEqual(result, 0)
+            gemini.assert_not_called()
+            self.assertEqual(scene.read_bytes(), b"existing scene")
+
+    def test_repo_dotenv_key_loader(self):
+        with tempfile.TemporaryDirectory() as directory:
+            dotenv = Path(directory) / ".env"
+            dotenv.write_text("# local only\nGEMINI_API_KEY='test-value'\n")
+            with patch.dict("os.environ", {}, clear=True):
+                self.assertEqual(load_gemini_api_key(dotenv), "test-value")
 
     def test_scene_prompt_and_goal_reference_routing(self):
         template = (
@@ -216,8 +294,8 @@ class RendererTests(unittest.TestCase):
         )
         for activity in activities:
             self.assertIn(activity, prompt)
-        self.assertIn("Choose exactly one or two", prompt)
-        self.assertIn("high 27.0°C", prompt)
+        self.assertIn("Include one or two", prompt)
+        self.assertIn("High 27.0°C", prompt)
 
     def test_forecast_is_ranked_into_exactly_five_activity_names(self):
         activities = recommend_activities(sample_forecast())
