@@ -28,17 +28,9 @@ ENVIRONMENTS = {
         "with its long limestone summit ridge, folded cirques, dark conifer bands, "
         "aspen-covered foothills, and broad Wasatch scale",
     ),
-    "great_salt_lake": Environment(
-        "Great Salt Lake Valley",
-        "the wide Great Salt Lake basin with shallow reflective water, pale salt "
-        "shoreline, Antelope Island silhouettes, distant Wasatch peaks, sagebrush, "
-        "and an immense open sky",
-    ),
     "moab_red_rocks": Environment(
         "Moab Red Rocks",
         "layered red and orange Wingate sandstone cliffs, fins and rounded domes "
-        "near Moab, cottonwoods along the Colorado River, and the blue La Sal "
-        "Mountains in the distance",
     ),
     "zion_cliffs": Environment(
         "Zion National Park Cliffs",
@@ -46,47 +38,15 @@ ENVIRONMENTS = {
         "Zion Canyon, stepped cliff faces, dark vertical alcoves, pinyon-juniper "
         "slopes, and cottonwoods along the canyon floor",
     ),
-    "bryce_hoodoos": Environment(
-        "Bryce Canyon Hoodoos",
-        "the dense amphitheater of orange, pink, and cream hoodoos at Bryce Canyon, "
-        "with ponderosa pines on the rim and distant high-plateau layers",
-    ),
-    "capitol_reef": Environment(
-        "Capitol Reef",
-        "the Waterpocket Fold at Capitol Reef with pale domes, red monoclines, "
-        "layered desert cliffs, Fremont River cottonwoods, and small historic "
-        "orchard shapes without buildings or signs",
-    ),
     "uinta_alpine_lake": Environment(
         "Uinta Mountains Alpine Lake",
         "a high Uinta Mountains lake reflecting broad east-west quartzite ridges, "
         "spruce-fir forest, granite boulders, willow edges, and open alpine tundra",
     ),
-    "bonneville_salt_flats": Environment(
-        "Bonneville Salt Flats",
-        "the vast white Bonneville salt crust with subtle polygon texture, shallow "
-        "seasonal reflections, and the dark low Silver Island Mountains under a "
-        "huge uninterrupted sky",
-    ),
     "bear_lake": Environment(
         "Bear Lake",
         "Bear Lake's luminous turquoise water, long curving shoreline, sage and "
         "aspen foreground, and softly rounded Bear River Range mountains",
-    ),
-    "canyonlands": Environment(
-        "Canyonlands",
-        "a high overlook across layered Canyonlands mesas, buttes, deep red-rock "
-        "canyons, and distant river-cut forms with strong atmospheric depth",
-    ),
-    "san_rafael_swell": Environment(
-        "San Rafael Swell",
-        "the San Rafael Swell's tilted sandstone reef, long desert escarpments, "
-        "gray-green sage flats, red washes, and distant mesas",
-    ),
-    "cedar_breaks": Environment(
-        "Cedar Breaks",
-        "the high-elevation Cedar Breaks amphitheater with intricate red, orange, "
-        "and cream eroded cliffs, spruce forest, and broad Markagunt Plateau sky",
     ),
 }
 
@@ -124,12 +84,6 @@ SCENE_CONDITIONS = {
         "soft low clouds and fine barely visible drizzle, dampened colors, misty "
         "distance, and reflective wet surfaces",
         "storm",
-    ),
-    "freezing_drizzle": SceneCondition(
-        "Freezing Drizzle",
-        "low gray cloud, delicate glaze ice on exposed branches and rocks, cold "
-        "blue-gray light, and subtle fine precipitation",
-        "snow",
     ),
     "rain": SceneCondition(
         "Rain",
