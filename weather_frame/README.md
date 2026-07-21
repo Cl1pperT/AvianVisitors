@@ -239,6 +239,30 @@ calls for the current catalog (currently 90 are missing). It is never implied.
 `--limit` bounds any selection, existing PNGs are skipped, and `--force` is
 required to replace one.
 
+### Curated activity-scene trials
+
+Activity variants are generated from completed weather scenes and stored under
+`assets/activity_scenes/`, so they cannot replace the weather-only library.
+Preview the four curated jobs without an API call:
+
+```bash
+python3 -m weather_frame.generate_activity_scenes --all --dry-run
+```
+
+Generate one activity or all four:
+
+```bash
+python3 -m weather_frame.generate_activity_scenes --activity rock_climbing
+python3 -m weather_frame.generate_activity_scenes --all
+```
+
+The initial catalog deliberately pairs each activity with believable weather:
+rock climbing in mostly sunny Moab, paddleboarding on clear and calm Bear Lake,
+hammocking below partly cloudy Mount Timpanogos, and cross-country skiing during
+Uinta snow showers. Paddleboarding cannot select a windy scene, and skiing can
+only select a snow-covered mountain scene. Existing variants are skipped unless
+the exact selection is regenerated with `--force`.
+
 Optional geography references follow the bird generator's anatomy-reference
 pattern. Place a photo at
 `weather_frame/assets/references/environments/<environment>.jpg`; it is attached

@@ -8,7 +8,7 @@ import urllib.parse
 from contextlib import redirect_stdout
 from dataclasses import replace
 from datetime import date, datetime, timedelta, timezone
-from io import StringIO
+from io import BytesIO, StringIO
 from pathlib import Path
 from unittest.mock import patch
 
@@ -25,6 +25,17 @@ from weather_frame.eink import (
     quantize_spectra6,
 )
 from weather_frame.generate_manual_prompts import PROMPT_JOBS
+from weather_frame.generate_activity_scenes import (
+    ACTIVITY_SCENE_JOBS,
+    ACTIVITY_SCENES_BY_SLUG,
+    DRY_ACTIVITY_CONDITIONS,
+    LAKE_ENVIRONMENTS,
+    MOUNTAIN_ENVIRONMENTS,
+    SNOW_ACTIVITY_CONDITIONS,
+    activity_scene_path,
+    build_activity_prompt,
+    main as generate_activity_scenes_main,
+)
 from weather_frame.generate_scenes import (
     GEMINI_MODEL,
     GEMINI_URL,
@@ -263,6 +274,108 @@ class RendererTests(unittest.TestCase):
             dotenv.write_text("# local only\nGEMINI_API_KEY='test-value'\n")
             with patch.dict("os.environ", {}, clear=True):
                 self.assertEqual(load_gemini_api_key(dotenv), "test-value")
+
+    def test_activity_trials_use_curated_locations_and_weather(self):
+        selected = {
+            job.slug: (job.environment, job.condition)
+            for job in ACTIVITY_SCENE_JOBS
+        }
+        self.assertEqual(
+            selected,
+            {
+                "rock_climbing": ("moab_red_rocks", "mostly_sunny"),
+                "paddleboarding": ("bear_lake", "clear"),
+                "hammocking": ("mount_timpanogos", "partly_cloudy"),
+                "skiing": ("uinta_alpine_lake", "snow_showers"),
+            },
+        )
+        paddleboarding = ACTIVITY_SCENES_BY_SLUG["paddleboarding"]
+        self.assertIn(paddleboarding.environment, LAKE_ENVIRONMENTS)
+        self.assertIn(paddleboarding.condition, DRY_ACTIVITY_CONDITIONS)
+        self.assertNotEqual(paddleboarding.condition, "windy")
+        skiing = ACTIVITY_SCENES_BY_SLUG["skiing"]
+        self.assertIn(skiing.environment, MOUNTAIN_ENVIRONMENTS)
+        self.assertIn(skiing.condition, SNOW_ACTIVITY_CONDITIONS)
+
+    def test_activity_prompt_keeps_people_in_the_watercolor_style(self):
+        template = Path(__file__).parents[1].joinpath(
+            "activity_scene_prompt.template.md"
+        ).read_text()
+        prompt = build_activity_prompt(
+            template,
+            ACTIVITY_SCENES_BY_SLUG["paddleboarding"],
+        )
+        self.assertIn("Stand-up paddleboarding", prompt)
+        self.assertIn("Bear Lake", prompt)
+        self.assertIn("Clear", prompt)
+        self.assertIn("same luminous transparent watercolor", prompt)
+        self.assertIn("no wind, whitecaps", prompt)
+        self.assertIn("fills every pixel", prompt)
+
+    def test_activity_output_is_isolated_from_weather_scenes(self):
+        root = Path("activity-scenes")
+        job = ACTIVITY_SCENES_BY_SLUG["rock_climbing"]
+        self.assertEqual(
+            activity_scene_path(root, job),
+            root / "rock_climbing" / "moab_red_rocks" / "mostly_sunny.png",
+        )
+
+    def test_activity_generator_preserves_base_and_passes_it_as_reference(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            base_root = root / "base"
+            output_root = root / "activity"
+            base = base_root / "moab_red_rocks" / "mostly_sunny.png"
+            base.parent.mkdir(parents=True)
+            Image.new("RGB", (40, 30), (25, 80, 120)).save(base)
+            before = base.read_bytes()
+            generated = BytesIO()
+            Image.new("RGB", (40, 30), (180, 90, 40)).save(
+                generated,
+                format="PNG",
+            )
+            with patch(
+                "weather_frame.generate_activity_scenes.call_gemini",
+                return_value=generated.getvalue(),
+            ) as gemini:
+                with redirect_stdout(StringIO()):
+                    result = generate_activity_scenes_main([
+                        "--activity", "rock_climbing",
+                        "--base-scenes", str(base_root),
+                        "--out", str(output_root),
+                        "--gemini-key", "test-key",
+                        "--sleep", "0",
+                    ])
+            self.assertEqual(result, 0)
+            self.assertEqual(base.read_bytes(), before)
+            self.assertTrue(
+                activity_scene_path(
+                    output_root,
+                    ACTIVITY_SCENES_BY_SLUG["rock_climbing"],
+                ).is_file()
+            )
+            self.assertEqual(gemini.call_args.kwargs["scene_reference"], base)
+            self.assertIsNone(gemini.call_args.kwargs["style_reference"])
+
+    def test_activity_generator_skips_existing_variant(self):
+        with tempfile.TemporaryDirectory() as directory:
+            output_root = Path(directory)
+            job = ACTIVITY_SCENES_BY_SLUG["paddleboarding"]
+            output = activity_scene_path(output_root, job)
+            output.parent.mkdir(parents=True)
+            output.write_bytes(b"existing activity scene")
+            with patch(
+                "weather_frame.generate_activity_scenes.call_gemini"
+            ) as gemini:
+                with redirect_stdout(StringIO()):
+                    result = generate_activity_scenes_main([
+                        "--activity", "paddleboarding",
+                        "--out", str(output_root),
+                        "--gemini-key", "test-key",
+                    ])
+            self.assertEqual(result, 0)
+            gemini.assert_not_called()
+            self.assertEqual(output.read_bytes(), b"existing activity scene")
 
     def test_scene_prompt_and_goal_reference_routing(self):
         template = (

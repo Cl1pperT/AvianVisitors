@@ -134,6 +134,7 @@ def build_gemini_payload(
     *,
     style_reference: Path | None,
     geography_reference: Path | None,
+    scene_reference: Path | None = None,
 ) -> dict:
     """Build the tested image-only request sent to Gemini."""
     parts: list[dict] = [{"text": prompt}]
@@ -143,6 +144,14 @@ def build_gemini_payload(
     if style_reference:
         parts.append({"text": "POSITIVE STYLE REFERENCE (watercolor technique and atmosphere only):"})
         parts.append(_reference_part(style_reference))
+    if scene_reference:
+        parts.append({
+            "text": (
+                "BASE WATERCOLOR SCENE REFERENCE: preserve its recognizable place, "
+                "weather, composition, palette, brushwork, and edge-to-edge crop."
+            )
+        })
+        parts.append(_reference_part(scene_reference))
     return {
         "contents": [{"role": "user", "parts": parts}],
         "generationConfig": {
@@ -178,11 +187,13 @@ def call_gemini(
     *,
     style_reference: Path | None,
     geography_reference: Path | None,
+    scene_reference: Path | None = None,
 ) -> bytes:
     payload = build_gemini_payload(
         prompt,
         style_reference=style_reference,
         geography_reference=geography_reference,
+        scene_reference=scene_reference,
     )
     request = urllib.request.Request(
         GEMINI_URL,
